@@ -1,22 +1,30 @@
 import React, {useState} from 'react';
 import {Menu} from '../components';
+import {useNavigate} from 'react-router-dom';
 
 
-const Login = ({location, history}) => {
-  
+
+const Login = ({location, history }) => {
+
+  const navigate = useNavigate();
   const [nickname, setNickName] = useState('');
 
   console.log('Login에서 호출됨');
 
-  const onChange = (e) =>{
+  const ONCHANGE = (e) =>{
     setNickName(e.target.value);
   }
 
-  const onClick = () =>{
-    history.push({
-      pathname : '/',
-      state: {nickname : nickname},
-    });
+  const ONCLICK = () =>{
+
+  
+    console.log('nickname:', nickname);
+    // history.push({
+    //   pathname : '/',
+    //   state: {nickname : nickname},
+    // });
+    navigate('/',{nickname : nickname});
+    // navigate('/');
   }
 
   return (
@@ -27,17 +35,18 @@ const Login = ({location, history}) => {
         <li>
           <div>
             <h3>What's your nickname?</h3>
-            <input onChange={onChange} value={nickname} type="text"
+            <input onChange={ONCHANGE} value={nickname} type="text"
               onKeyPress={(e)=>{
                 if (e.key === 'Enter')
-                  onClick();
+                ONCLICK();
               }}/>
-            <button onClick={onClick}>입장</button>
+            <button onClick={ONCLICK}>입장</button>
           </div>
         </li>
       </ul>
     </div>
   );
+
 };
 
 export default Login;

@@ -8,6 +8,7 @@
 // import logo from './logo.svg';
 // import './App.css';
 import React from 'react';
+
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {Home, Main, Login} from './routes';
 import io from "socket.io-client";
@@ -32,16 +33,12 @@ function App() {
   console.log("app 호출됨");
    return (
     <div className="App">
-        Learn React
-       
-          <Routes>
-            <Route path="/" component={<Home/>}/>
-            <Route path="/main" component={<Main/>}/>
-            <Route path="/login" component={<Login/>}/>
+        <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/main" element={<Main/>}/>
+            <Route path="/login" element={<Login/>}/>
           </Routes>
-      
     </div>
-    
   );
 }
 

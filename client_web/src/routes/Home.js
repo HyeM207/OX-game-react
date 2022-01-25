@@ -8,19 +8,21 @@ import {useLocation} from "react-router-dom"
 
 
    const location = useLocation();
-   const nickname = location.state.nickname;
+   console.log('location: ', location); 
+       
+   const nickname = location.nickname;
    const [chats, setchats] = useState([]);
    const [isConnected, setIsConnected] = useState(socket.connected);
    const [Msg, setMessage] = useState(null);
  
    const addChatMessage = (data) => {
-     let message = '';
-     if (data.numUsers === 1) {
-       message += `there's 1 participant`;
-     } else {
-       message += `there are ${data.numUsers} participants`;
-     }
-     setchats(chats.concat(message));
+      let message = '';
+      if (data.numUsers === 1) {
+        message += `there's 1 participant`;
+      } else {
+        message += `there are ${data.numUsers} participants`;
+      }
+      setchats(chats.concat(message));
    }
  
    useEffect(async() => {
