@@ -9,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const options = {
     cors: true,
-    origin: ['http://192.168.0.10:7000/'],
+    origin: ['http://192.168.200.156:7000/'],
 };
 const io = socketio(server, options);
 

@@ -45,6 +45,7 @@ const url = require('url');
 module.exports = (io) => {
 
     var gameserver = io.of("dynamic-web_OXGame");
+
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
         console.log("socketid : "+ socket.id); 
@@ -52,10 +53,54 @@ module.exports = (io) => {
         // 따라서 사용자 이름과 소켓 id를 해시값으로 저장해도 됨
         const {ns} = url.parse(socket.handshake.url, true).query;
         console.log(ns);
+
+
+
+        // Chatroom
+        // let rooms = ["room1", "room2", "room3"];
+        let numUsers = 0;
+        let addedUser = false; 
+
+           // when the client emits 'add user', this listens and executes
+        socket.on('add user', (username) => {
+            if (addedUser) return;
+
+            // we store the username in the socket session for this client
+            socket.username = username;
+            ++numUsers;
+            console.log("connected : "+socket.id+" num : "+numUsers);
+            addedUser = true;
+            socket.emit('login', {
+            numUsers: numUsers
+            });
+
+            // echo globally (all clients) that a person has connected
+            socket.broadcast.emit('user joined', {
+            username: socket.username,
+            numUsers: numUsers
+            });
+        });
+
+
+        // when the user disconnects.. perform this
+        socket.on('disconnect', () => {
+            if (addedUser) {
+            --numUsers;
+            console.log("disconnected : "+socket.id+" num : "+numUsers);
+            // echo globally that this client has left
+            socket.broadcast.emit('user left', {
+                username: socket.username,
+                numUsers: numUsers
+            });
+            }
+        });
+        
+
         socket.on("test", (data) => {
             console.log(data);
             socket.emit("server", "hello22");
         })
+        
         socket.on("join", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에 join 해주는 함수임
             console.log(data);
             //socket.join(data.room);

@@ -1,15 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom'; 
+import { BrowserRouter } from "react-router-dom";
 //import './index.css';
 import App from './App';
+import {Home, Main, Login} from './routes';
 //import reportWebVitals from './reportWebVitals';
 //import client_socket from './socket';
 
-
-
+// src/index.js 는 Entry 파일로,  id값이 'root'인 index.html파일의 root를 지정해준다.
 
 ReactDOM.render(
-  <App />,
+  <BrowserRouter>
+    <App/>
+  </BrowserRouter>,
   document.getElementById('root')
 );
 
