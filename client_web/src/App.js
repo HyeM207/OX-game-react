@@ -10,7 +10,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import {Home, Main, Login} from './routes';
+import {Home, Main, Login, Insert} from './routes';
 import io from "socket.io-client";
 import './App.css';
 import ReactDOM from 'react-dom'; 
@@ -37,6 +37,7 @@ function App() {
             <Route path="/" element={<Home/>}/>
             <Route path="/main" element={<Main/>}/>
             <Route path="/login" element={<Login/>}/>
+            <Route path="/insert" element={<Insert/>}/>
           </Routes>
     </div>
   );
