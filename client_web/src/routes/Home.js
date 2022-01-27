@@ -1,62 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import {Menu, socket} from '../components';
-import {useLocation} from "react-router-dom"
+import {useLocation, useNavigate} from "react-router-dom";
  
  const Home = () => {
 
   console.log("Home에서 호출됨");
 
-
+   const navigate = useNavigate();
    const location = useLocation();
    console.log('location: ', location); 
        
-   const nickname = location.nickname;
+   // 이거 안 먹음
+  //  if (location.state == ''  ) {
+  //    console.log('location.state 있음 :',location.state ,':');
+  //    navigate('dynam`ic-web_OXGame/login');
+  //  }
+
+   const nickname = location.state.nickname;
+   console.log('nickname: ', nickname); 
+
+  
+
    const [chats, setchats] = useState([]);
    const [isConnected, setIsConnected] = useState(socket.connected);
    const [Msg, setMessage] = useState(null);
  
-   const addChatMessage = (data) => {
-      let message = '';
-      if (data.numUsers === 1) {
-        message += `there's 1 participant`;
-      } else {
-        message += `there are ${data.numUsers} participants`;
-      }
-      setchats(chats.concat(message));
-   }
+  //  const addChatMessage = (data) => {
+  //     let message = '';
+  //     if (data.numUsers === 1) {
+  //       message += `there's 1 participant`;
+  //     } else {
+  //       message += `there are ${data.numUsers} participants`;
+  //     }
+  //     setchats(chats.concat(message));
+  //  }
  
-   useEffect(async() => {
+  //  useEffect(async() => {
        
-     socket.emit('add user', nickname);
+  //    socket.emit('add user', nickname);
      
-     socket.on('login', (data) => {
-       setIsConnected(true);    
-       addChatMessage(data);
-     });
-     socket.on('user joined', (data) =>{
-       setchats(chats.concat(`${data.username} joined`));
-     })
-     socket.on('user left', (data) => {
-       setchats(chats.concat(`${data.username} left`));
-     });
-     socket.on('disconnect', () => {
-       setIsConnected(false);
-     });
-     socket.on('new message', (data) => {
-       setchats(chats.concat(`${data.username} : ${data.message}`));
-     });
-     return () => {
-       socket.off('login');
-       socket.off('disconnect');
-       socket.off('new message');
-     };
-   });
+  //    socket.on('login', (data) => {
+  //      setIsConnected(true);    
+  //      addChatMessage(data);
+  //    });
+  //    socket.on('user joined', (data) =>{
+  //      setchats(chats.concat(`${data.username} joined`));
+  //    })
+  //    socket.on('user left', (data) => {
+  //      setchats(chats.concat(`${data.username} left`));
+  //    });
+  //    socket.on('disconnect', () => {
+  //      setIsConnected(false);
+  //    });
+  //    socket.on('new message', (data) => {
+  //      setchats(chats.concat(`${data.username} : ${data.message}`));
+  //    });
+  //    return () => {
+  //      socket.off('login');
+  //      socket.off('disconnect');
+  //      socket.off('new message');
+  //    };
+  //  });
  
-   const sendMessage = () => {
-     console.log(Msg);
-     setchats(chats.concat(`${nickname} : ${Msg}`));
-     socket.emit('new message', Msg);
-     setMessage('');
+   const ENTERWAITING = () => {
+
+    
+     console.log('ENTERWAITING');
+     navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : '12345'}});
+
+
+    //  setchats(chats.concat(`${nickname} : ${Msg}`));
+    //  socket.emit('new message', Msg);
+    //  setMessage('');
    }
  
    const onChange = (e) =>{
@@ -64,27 +79,15 @@ import {useLocation} from "react-router-dom"
    }
  
    return (
-
-     <div className="App">
-       <header className="App-header">
+     <div>
+       <header>
+         <h1>HOME</h1>
+         <p>Nickname: { '' + nickname }</p>
          <p>Connected: { '' + isConnected }</p>
-         <p>socket ID: {nickname+`(${socket.id})` }</p>
-         <div className="scrollBlind">
-           <ul class ="message">
-             {chats.map((val, index) => {
-               return (<li key={index}>{val}</li>);
-             })}
-           </ul>
-         </div>
+         <p>socket ID: {`(${socket.id})` }</p>
+    
          <div>
-           <input 
-             onChange={onChange} value={Msg} class="inputMessage" 
-             placeholder="Type here..." 
-             onKeyPress={(e)=>{
-               if (e.key === 'Enter')
-                 sendMessage();
-             }}/>
-           <button onClick={sendMessage} >Send</button>
+           <button onClick={ENTERWAITING} > 방 입장</button>
          </div>
        </header>
      </div>

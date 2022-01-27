@@ -42,10 +42,16 @@
 
 const url = require('url');
 
+
+
+
 module.exports = (io) => {
-
+    
     var gameserver = io.of("dynamic-web_OXGame");
-
+    
+    let numUsers = 0; // 방 인원
+    let users = [];
+    
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
         console.log("socketid : "+ socket.id); 
@@ -53,45 +59,62 @@ module.exports = (io) => {
         // 따라서 사용자 이름과 소켓 id를 해시값으로 저장해도 됨
         const {ns} = url.parse(socket.handshake.url, true).query;
         console.log(ns);
+        
+        
+        let addedUser = false; // added 유저 경우 
+       
 
 
-
-        // Chatroom
-        // let rooms = ["room1", "room2", "room3"];
-        let numUsers = 0;
-        let addedUser = false; 
-
-           // when the client emits 'add user', this listens and executes
-        socket.on('add user', (username) => {
+        // when the client emits 'add user', this listens \and executes
+        socket.on('add user', (data) => {
+            console.log('[add user] add user 호출됨 addedUser : ', addedUser, 'user : ', data.nickname);
+            console.log('[add user] data: ',data);
             if (addedUser) return;
 
-            // we store the username in the socket session for this client
-            socket.username = username;
+            
+            
+            // // we store the username in the socket session for this client
+            var nickname = data.nickname;
+            var room = data.room;
             ++numUsers;
-            console.log("connected : "+socket.id+" num : "+numUsers);
+            users.push(nickname); //유저 목록에 추가 
+            console.log('[add user] numUseruse : ',numUsers);
+            console.log('[add user *] users : ',users);
+            console.log("[add user +] : " + nickname + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
+            // console.log("[add user +] : " + socket.nickname + " id:" +socket.id);
             addedUser = true;
-            socket.emit('login', {
-            numUsers: numUsers
+
+
+            socket.join(room);
+
+            gameserver.in(room).emit('login', {
+                numUsers: numUsers,
+                users : users
             });
 
-            // echo globally (all clients) that a person has connected
-            socket.broadcast.emit('user joined', {
-            username: socket.username,
-            numUsers: numUsers
+            // // // echo globally (all clients) that a person has connected
+            gameserver.in(room).emit('user joined', {
+                nickname: nickname,
+                numUsers: numUsers,
+                users : users
             });
         });
 
 
         // when the user disconnects.. perform this
-        socket.on('disconnect', () => {
+        socket.on('disconnect', (data) => {
             if (addedUser) {
             --numUsers;
-            console.log("disconnected : "+socket.id+" num : "+numUsers);
+            // 추가 필요
+            console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+            
             // echo globally that this client has left
-            socket.broadcast.emit('user left', {
-                username: socket.username,
+            socket.emit('user left', {
+                nickname: socket.nickname,
                 numUsers: numUsers
             });
+
+            socket.leave(data.room);
             }
         });
         
@@ -102,10 +125,10 @@ module.exports = (io) => {
         })
         
         socket.on("join", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에 join 해주는 함수임
-            console.log(data);
+            console.log("[join]", data);
             //socket.join(data.room);
 
-            // data를 출력했을 때 {"room" : 12345, "username" : "mini"} 라고 한다면
+            // data를 출력했을 때 {"troom" : 12345, "username" : "mini"} 라고 한다면
             // socket.io에는 namespace 하위 개념으로 room이 있음
             // room은 게임 그룹 단위로 여기면 될 것 같음 (예를 들어 어몽어스 한 방)
             // room이름(data.room)을 고유번호5자리 등으로 하여 참가자들이 join할 때 마다 즉, 여기 함수로 들어올 때마다

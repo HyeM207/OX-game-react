@@ -1,14 +1,13 @@
 import React, {useState} from 'react';
-import {Menu} from '../components';
 import {useNavigate} from 'react-router-dom';
-
+import {Menu, socket} from '../components';
 
 
 const Login = ({location, history }) => {
 
   const navigate = useNavigate();
   const [nickname, setNickName] = useState('');
-
+ 
   console.log('Login에서 호출됨');
 
   const ONCHANGE = (e) =>{
@@ -16,15 +15,10 @@ const Login = ({location, history }) => {
   }
 
   const ONCLICK = () =>{
-
-  
     console.log('nickname:', nickname);
-    // history.push({
-    //   pathname : '/',
-    //   state: {nickname : nickname},
-    // });
-    navigate('/',{nickname : nickname});
-    // navigate('/');
+
+    navigate('/dynamic-web_OXGame',{state : {nickname : nickname}});
+
   }
 
   return (
