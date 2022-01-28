@@ -19,7 +19,7 @@ const WaitingRoom = () => {
   
   const [chats, setchats] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [number, setNumber] = usesState(0);
+  const [number, setNumber] = useState(0);
   const [users, setUsers] = useState([]);
 
    useEffect(async() => {

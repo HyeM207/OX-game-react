@@ -34,11 +34,11 @@ function App() {
    return (
     <div className="App">
         <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/main" element={<Main/>}/>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/insert" element={<Insert/>}/>
-            <Route path="/waitingRoom" element={<WaitingRoom/>}/>
+            <Route path="/dynamic-web_OXGame" element={<Home/>}/>
+            <Route path="/dynamic-web_OXGame/main" element={<Main/>}/>
+            <Route path="/dynamic-web_OXGame/login" element={<Login/>}/>
+            <Route path="/dynamic-web_OXGame/waitingRoom" element={<WaitingRoom/>}/>
+	          <Route path="/dynamic-web_OXGame/insert" element={<Insert/>}/>
           </Routes>
     </div>
   );
