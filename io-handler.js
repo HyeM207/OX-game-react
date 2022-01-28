@@ -145,6 +145,14 @@ module.exports = (io) => {
         })
         // 그리고 만약 해당 퀴즈가 끝나면 Redis channel 삭제 예정
 
+        // ============ QUIZ INSERT ==================
+        socket.on("quiz", (data) => {
+            console.log("서버에서 quiz 수신함");
+            console.log(data);
+            console.log(data.problems[0]);
+            func.InsertQuiz(data);
+        })
     })
 
+    
 }

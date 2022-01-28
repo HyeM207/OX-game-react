@@ -10,7 +10,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import {Home, Main, Login, WaitingRoom} from './routes';
+import {Home, Main, Login, Insert, WaitingRoom} from './routes';
 import io from "socket.io-client";
 import './App.css';
 import ReactDOM from 'react-dom'; 
@@ -34,10 +34,11 @@ function App() {
    return (
     <div className="App">
         <Routes>
-            <Route path="/dynamic-web_OXGame" element={<Home/>}/>
-            <Route path="/dynamic-web_OXGame/main" element={<Main/>}/>
-            <Route path="/dynamic-web_OXGame/login" element={<Login/>}/>
-            <Route path="/dynamic-web_OXGame/waitingRoom" element={<WaitingRoom/>}/>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/main" element={<Main/>}/>
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/insert" element={<Insert/>}/>
+            <Route path="/waitingRoom" element={<WaitingRoom/>}/>
           </Routes>
     </div>
   );
