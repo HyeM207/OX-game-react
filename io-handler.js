@@ -41,6 +41,7 @@
 // 해당 사이트에서 나갈 경우 socket이 disconnect 되도록만 해주면 될 것 같음
 
 const url = require('url');
+const func = require('./server_functions/db_func');
 
 
 
