@@ -5,10 +5,10 @@ const Menu = () =>{
     return(
         <div>
             <ul>
-                <li><Link to="/login">Login</Link></li>
-                <li><Link to="/">Home</Link></li>
-                <li><Link to="/main">Main</Link></li>
-                <li><Link to="/insert">Insert</Link></li>
+                <li><Link to="/dynamic-web_OXGame/login">Login</Link></li>
+                <li><Link to="/dynamic-web_OXGame/">Home</Link></li>
+                <li><Link to="/dynamic-web_OXGame/main">Main</Link></li>
+                <li><Link to="/dynamic-web_OXGame/insert">Insert</Link></li>
             </ul>
             <hr/>
         </div>

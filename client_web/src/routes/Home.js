@@ -63,12 +63,8 @@ import {useLocation, useNavigate} from "react-router-dom";
   //  });
  
    const ENTERWAITING = () => {
-
-    
      console.log('ENTERWAITING');
      navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : '12345'}});
-
-
     //  setchats(chats.concat(`${nickname} : ${Msg}`));
     //  socket.emit('new message', Msg);
     //  setMessage('');

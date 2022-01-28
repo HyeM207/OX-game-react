@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const options = {
     cors: true,
-    origin: ['http://172.30.1.60:7000/dynamic-web_OXGame/'],
+    origin: ['http://localhost:7000/dynamic-web_OXGame/'],
 };
 const io = socketio(server, options);
 

@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
-import {Menu} from '../components';
+import {Menu, socket} from '../components';
 import {useNavigate} from 'react-router-dom';
-import io from "socket.io-client";
+// import io from "socket.io-client";
 
-const namespace = "dynamic-web_OXGame"; //일단 서버 공용 형식을 위해 웹인지 게임이름이 어떤 건지를 구분할 수 있도록 정보를 나타내었고 다이나믹 namespace를 사용하기 때문에 앞에 dynamic표시를 해줌
+// const namespace = "dynamic-web_OXGame"; //일단 서버 공용 형식을 위해 웹인지 게임이름이 어떤 건지를 구분할 수 있도록 정보를 나타내었고 다이나믹 namespace를 사용하기 때문에 앞에 dynamic표시를 해줌
 // 이름은 확정은 아니지만 당분간은 이 이름으로 진행하는 것임 (서비스 이름 미정)
-const socket = io.connect(`http://192.168.56.1:7000/${namespace}`, {
-  query: `ns=${namespace}`, // 지금은 필요없는 기능이지만 그 전 구조에서는 이 값으로 게임 모듈을 연결해주는 역할이었음 
-  // 추후 필요하면 쓰일 수 있는 기능이라 없애지는 않음
-});
+// const socket = io.connect(`http://localhost:7000/${namespace}`, {
+//   query: `ns=${namespace}`, // 지금은 필요없는 기능이지만 그 전 구조에서는 이 값으로 게임 모듈을 연결해주는 역할이었음 
+//   // 추후 필요하면 쓰일 수 있는 기능이라 없애지는 않음
+// });
 
 
 
