@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Menu, socket} from '../components';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation } from 'react-router-dom';
 // import io from "socket.io-client";
 
 // const namespace = "dynamic-web_OXGame"; //일단 서버 공용 형식을 위해 웹인지 게임이름이 어떤 건지를 구분할 수 있도록 정보를 나타내었고 다이나믹 namespace를 사용하기 때문에 앞에 dynamic표시를 해줌
@@ -12,8 +12,12 @@ import {useNavigate} from 'react-router-dom';
 
 
 
-const Insert = ({location, history }) => {
+const Insert = () => {
   console.log('Insert에서 호출됨');
+
+  const location = useLocation();
+  const nickname = location.state.nickname;
+  console.log('nicknameINSERT: ', nickname);
 
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -139,7 +143,7 @@ const Insert = ({location, history }) => {
     console.log('num:', problems.length);
 
     var quiz = {
-      manager: 'WOO',
+      manager: nickname,
       problem_num: problems.length,
       problems: problems,
       title: title
@@ -165,8 +169,8 @@ const Insert = ({location, history }) => {
             {value.isUpdating
             ? <p>
                 <input id={"Problem-Updating-"+String(value.round)} defaultValue={value.question} onChange={onChangeQuestion}/>
-                <input type="radio" id={"Problem-Updating-"+String(value.round)} value="option1"  name="answer" onClick={onChangeOption} /> Option 1
-                <input type="radio" id={"Problem-Updating-"+String(value.round)} value="option2" name="answer" onClick={onChangeOption} /> Option 2
+                <input type="radio" id={"Problem-Updating-"+String(value.round)} value="true"  name="answer" onClick={onChangeOption} /> true
+                <input type="radio" id={"Problem-Updating-"+String(value.round)} value="false" name="answer" onClick={onChangeOption} /> false
                 <button id={"Problem-Updating-"+String(value.round)} onClick={onClickModify}>수정 완료</button>
               </p>
             : <p id={"Problem-Update-"+String(value.round)}> 
@@ -180,8 +184,8 @@ const Insert = ({location, history }) => {
       {/* ========================================================================================== */}
       <h5>
         질문 <textarea name="question" value={question} onChange={onChange}  />
-        <input type="radio" value="option1"  name="answer" onChange={onChange} /> Option 1
-        <input type="radio" value="option2" name="answer" onChange={onChange} /> Option 2
+        <input type="radio" value="true"  name="answer" onChange={onChange} /> true
+        <input type="radio" value="false" name="answer" onChange={onChange} /> false
         <button onClick={onCreate}>문제 추가</button>
       </h5>
       <br/>

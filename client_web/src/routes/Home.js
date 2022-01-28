@@ -73,6 +73,12 @@ import {useLocation, useNavigate} from "react-router-dom";
    const onChange = (e) =>{
      setMessage(e.target.value);
    }
+
+   const InsertPage = () => {
+     console.log('문제 출제 페이지로 이동합니다.');
+     navigate('/dynamic-web_OXGame/insert',{state :{nickname : nickname}});
+
+   }
  
    return (
      <div>
@@ -84,6 +90,7 @@ import {useLocation, useNavigate} from "react-router-dom";
     
          <div>
            <button onClick={ENTERWAITING} > 방 입장</button>
+           <button onClick={InsertPage}>문제 출제</button>
          </div>
        </header>
      </div>
