@@ -7,6 +7,10 @@ const cors = require("cors");
 
 const mongoose = require('mongoose');
 const Quiz = require('../schemas/quiz');
+const { resolve } = require("path");
+const { reject } = require("nunjucks/src/filters");
+
+
 
 //===== Mongo DB ====
 //MongoDB 연결
@@ -37,7 +41,27 @@ func.InsertQuiz = function(quizData){
             console.log('New QUIZ Saved!');
         }
     });
+}
 
+
+// 특정 nickname 가진 퀴즈 추출 함수
+func.ExtractQuiz = function(nickname){
+    return new Promise((resolve)=>{
+        console.log('Extract Quiz 함수 호출');
+                
+        Quiz.find({manager: nickname}, function(error, quiz){
+            console.log('--- Read Quiz ---');
+            if(error){
+                console.log(error);
+            }else{
+                // 서버에서 클라이언트로 select 한 퀴즈들 전송
+                resolve(quiz);
+            }
+        });
+
+    })
+    
+    
 }
 
 module.exports = func;

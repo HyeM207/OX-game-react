@@ -153,6 +153,19 @@ module.exports = (io) => {
             console.log(data.problems[0]);
             func.InsertQuiz(data);
         })
+
+        // =========== EXTRACT QUIZ ===================
+        socket.on("nickname", (data) => {
+            console.log("서버에서 nickname 수신함(퀴즈 추출 위함)");
+            console.log('nickname: ', data);
+
+            func.ExtractQuiz(data).then(function (s_quizzes){
+                //console.log(s_quizzes);
+                socket.emit('s_quizzes',s_quizzes);
+                console.log('추출된 퀴즈들 전송 완료');
+            });
+            
+        })
     })
 
     

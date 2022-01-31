@@ -10,7 +10,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import {Home, Main, Login, Insert, WaitingRoom} from './routes';
+import {Home, Main, Login, Insert, WaitingRoom, ManageQuiz} from './routes';
 import io from "socket.io-client";
 import './App.css';
 import ReactDOM from 'react-dom'; 
@@ -39,6 +39,7 @@ function App() {
             <Route path="/dynamic-web_OXGame/login" element={<Login/>}/>
             <Route path="/dynamic-web_OXGame/waitingRoom" element={<WaitingRoom/>}/>
 	          <Route path="/dynamic-web_OXGame/insert" element={<Insert/>}/>
+            <Route path="/dynamic-web_OXGame/managequiz" element={<ManageQuiz/>}/>
           </Routes>
     </div>
   );

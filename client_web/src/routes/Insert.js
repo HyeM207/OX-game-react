@@ -149,7 +149,7 @@ const Insert = () => {
       title: title
   }
   console.log('quiz:', quiz);
-  socket.emit("quiz", quiz);
+  socket.emit("quiz", quiz); // ### socket으로 서버에 폼에 입력한 데이터 송신 ###
   console.log("SOCKET 전송완료");
 
   }
