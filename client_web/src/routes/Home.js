@@ -74,7 +74,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 
    const InsertPage = () => {
      console.log('문제 출제 페이지로 이동합니다.');
-     navigate('/dynamic-web_OXGame/insert',{state :{nickname : nickname}});
+     navigate('/dynamic-web_OXGame/createquiz',{state :{nickname : nickname}});
    }
 
    const CreateRoom = () => {

@@ -63,7 +63,7 @@ const CreateRoom = () => {
 
     const NEWQUIZ = () =>{
         console.log('[CreateRoom] NEWQUIZ(새 퀴즈 생성)- nickname', nickname);
-        navigate('/dynamic-web_OXGame/insert',{state :{nickname : nickname}});
+        navigate('/dynamic-web_OXGame/createquiz',{state :{nickname : nickname}});
     }
 
     const SECLCTQUIZ = (e) =>{
