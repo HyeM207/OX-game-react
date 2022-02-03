@@ -182,6 +182,24 @@ module.exports = (io) => {
             });
         })
 
+        // =========== EXTRACT QUIZ ===================
+        socket.on("nickname", (data) => {
+            console.log("서버에서 nickname 수신함(퀴즈 추출 위함)");
+            console.log('nickname: ', data);
+
+            func.ExtractQuiz(data).then(function (s_quizzes){
+                socket.emit('myQuizzes',s_quizzes);
+                console.log('추출된 퀴즈들 전송 완료');
+            });
+            
+        })
+
+        // =========== DELETE QUIZ ===================
+        socket.on("drop_ID", (data) => {
+            console.log("삭제할 퀴즈 ID 수신", data);
+            func.DeleteQuiz(data);
+            
+        })
     })
 
     function randomN(){

@@ -8,6 +8,7 @@ const cors = require("cors");
 const mongoose = require('mongoose');
 const Quiz = require('../schemas/quiz');
 const room = require("../schemas/room");
+const { resolve } = require("path");
 
 //===== Mongo DB ====
 //MongoDB 연결
@@ -38,6 +39,34 @@ func.InsertQuiz = function(quizData){
         }else{
             console.log('New QUIZ Saved!');
         }
+    });
+}
+
+
+// 특정 nickname 가진 퀴즈 추출 함수
+func.ExtractQuiz = function(nickname){
+    return new Promise((resolve)=>{
+        console.log('Extract Quiz 함수 호출');
+                
+        Quiz.find({manager: nickname}, function(error, quiz){
+            console.log('--- Read Quiz ---');
+            if(error){
+                console.log(error);
+            }else{
+                // 서버에서 클라이언트로 select 한 퀴즈들 전송
+                resolve(quiz);
+            }
+        });
+    }) 
+}
+
+// 특정 id 가진 퀴즈 삭제 함수
+func.DeleteQuiz = function(q_id){
+    console.log('Delete Quiz 함수 호출');
+
+    Quiz.deleteOne({_id: q_id}, function(error){
+        if(error) { console.log(error); }
+        else { console.log('QUIZ 삭제 완료'); }
     });
 
 }
