@@ -42,8 +42,7 @@
 
 const url = require('url');
 const func = require('./server_functions/db_func');
-
-
+const async = require('async');
 
 
 module.exports = (io) => {
@@ -75,18 +74,21 @@ module.exports = (io) => {
             
             
             // // we store the username in the socket session for this client
-            var nickname = data.nickname;
+            //var nickname = data.nickname;
+            socket.nickname = data.nickname;
             var room = data.room;
             ++numUsers;
-            users.push(nickname); //유저 목록에 추가 
+            users.push(socket.nickname ); //유저 목록에 추가 
             console.log('[add user] numUseruse : ',numUsers);
             console.log('[add user *] users : ',users);
-            console.log("[add user +] : " + nickname + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
+            console.log("[add user +] : " + socket.nickname  + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
             // console.log("[add user +] : " + socket.nickname + " id:" +socket.id);
             addedUser = true;
 
-
+            
             socket.join(room);
+            console.log('!!!!!! ', gameserver.sockets.adapter.rooms[room]); 
+            // gameserver.sockets.clients(room)
 
             gameserver.in(room).emit('login', {
                 numUsers: numUsers,
@@ -95,7 +97,7 @@ module.exports = (io) => {
 
             // // // echo globally (all clients) that a person has connected
             gameserver.in(room).emit('user joined', {
-                nickname: nickname,
+                nickname: socket.nickname,
                 numUsers: numUsers,
                 users : users
             });
@@ -153,7 +155,67 @@ module.exports = (io) => {
             console.log(data.problems[0]);
             func.InsertQuiz(data);
         })
+
+
+        // ===== CreateRoom =====
+        socket.on("loadQuiz", (data) =>{
+            console.log('[socket-loadQuiz] 호출됨');
+
+            func.loadQuiz(data.nickname).then(function (quizzes){
+                console.log('[socket-loadQuiz] quizzes:',quizzes);
+                socket.emit('showQuiz',quizzes);
+                console.log('추출된 퀴즈들 전송 완료');
+            });
+        })
+
+
+        socket.on("createRoom", (room) =>{
+            console.log('[socket-createRoom] 호출됨');
+            console.log('수정 전 ', room);
+            room['creationDate'] = nowDate();
+            room['roomPin'] = randomN();
+            console.log('수정 후 ', room);
+           func.InsertRoom(room);
+
+           socket.emit('succesCreateRoom', {
+                roomPin: room.roomPin
+            });
+        })
+
     })
 
+    function randomN(){
+        var randomNum = {};
+        //0~9까지의 난수
     
+        randomNum.random = function(n1, n2) {
+            return parseInt(Math.random() * (n2 -n1 +1)) + n1;
+        };
+    
+        var value = "";
+        for(var i=0; i<5; i++){
+            value += randomNum.random(0,9);
+        }
+        return value;
+        
+    };
+
+
+    function nowDate(){
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = ('0' + (today.getMonth() + 1)).slice(-2);
+        var day = ('0' + today.getDate()).slice(-2);
+        
+        var today = new Date();   
+        var hours = ('0' + today.getHours()).slice(-2); 
+        var minutes = ('0' + today.getMinutes()).slice(-2);
+        var seconds = ('0' + today.getSeconds()).slice(-2); 
+        
+        var dateString = year + '-' + month  + '-' + day;
+        var timeString = hours + ':' + minutes  + ':' + seconds;
+    
+        var now_date = dateString + " " + timeString;
+        return now_date;
+    };
 }

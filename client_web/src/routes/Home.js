@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {Menu, socket} from '../components';
 import {useLocation, useNavigate} from "react-router-dom";
- 
+
  const Home = () => {
 
   console.log("Home에서 호출됨");
@@ -23,8 +23,9 @@ import {useLocation, useNavigate} from "react-router-dom";
 
    const [chats, setchats] = useState([]);
    const [isConnected, setIsConnected] = useState(socket.connected);
-   const [Msg, setMessage] = useState(null);
- 
+  //  const [Msg, setMessage] = useState(null);
+   const [room, setRoom] = useState('');
+
   //  const addChatMessage = (data) => {
   //     let message = '';
   //     if (data.numUsers === 1) {
@@ -64,21 +65,23 @@ import {useLocation, useNavigate} from "react-router-dom";
  
    const ENTERWAITING = () => {
      console.log('ENTERWAITING');
-     navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : '12345'}});
-    //  setchats(chats.concat(`${nickname} : ${Msg}`));
-    //  socket.emit('new message', Msg);
-    //  setMessage('');
+     navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : room}});
    }
  
-   const onChange = (e) =>{
-     setMessage(e.target.value);
+   const ONCHANGEROOM = (e) =>{
+      setRoom(e.target.value);
    }
 
    const InsertPage = () => {
      console.log('문제 출제 페이지로 이동합니다.');
      navigate('/dynamic-web_OXGame/insert',{state :{nickname : nickname}});
-
    }
+
+   const CreateRoom = () => {
+    console.log('방 생성 페이지로 이동합니다.');
+    navigate('/dynamic-web_OXGame/createRoom',{state :{nickname : nickname}});
+  }
+
  
    return (
      <div>
@@ -89,8 +92,10 @@ import {useLocation, useNavigate} from "react-router-dom";
          <p>socket ID: {`(${socket.id})` }</p>
     
          <div>
-           <button onClick={ENTERWAITING} > 방 입장</button>
-           <button onClick={InsertPage}>문제 출제</button>
+           <p>  <input onChange={ONCHANGEROOM} value={room} type="text"/>
+             <button onClick={ENTERWAITING} > 방 입장</button></p>
+           <p><button onClick={InsertPage}>문제 출제</button></p>
+           <p><button onClick={CreateRoom}>방 생성</button></p>
          </div>
        </header>
      </div>
