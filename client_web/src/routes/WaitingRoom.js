@@ -25,31 +25,30 @@ const WaitingRoom = () => {
    useEffect(async() => {
     // socket.emit('add user', nickname);
      
-    socket.emit('add user', {nickname: nickname, room: room});
+      socket.emit('add user', {nickname: nickname, room: room});
 
-
-     socket.on('login', (data) => {
+      socket.on('login', (data) => {
         console.log('[socket-login]', data.numUsers);
         setUsers(data.users);
         setIsConnected(true);    
-     });
+      });
 
-     socket.on('user joined', (data) =>{
-      console.log('[socket-user joined]', data.nickname);
-       setNumber(data.numUsers);
-       setUsers(data.users);
-       setchats(chats.concat(`${data.nickname} joined`));
-     })
-     
-     socket.on('user left', (data) => {
+      socket.on('user joined', (data) =>{
+        console.log('[socket-user joined]', data.nickname);
+        setNumber(data.numUsers);
+        setUsers(data.users);
+        setchats(chats.concat(`${data.nickname} joined`));
+      })
+      
+      socket.on('user left', (data) => {
       console.log('[socket-user left]', data.nickname);
-       setchats(chats.concat(`${data.nickname} left`));
-     });
+        setchats(chats.concat(`${data.nickname} left`));
+      });
 
-     socket.on('disconnect', () => {
-       console.log('[socket-disconnect]');
-       setIsConnected(false);
-     });
+      socket.on('disconnect', () => {
+        console.log('[socket-disconnect]');
+        setIsConnected(false);
+  });
     //  socket.on('new message', (data) => {
     //    setchats(chats.concat(`${data.username} : ${data.message}`));
     //  });
@@ -68,16 +67,16 @@ const WaitingRoom = () => {
 
   const ENTERGAME = () =>{
     console.log('[WatingRoom] nickname:', nickname);
-    navigate('/dynamic-web_OXGame/quizRoom',{state: {nickname : nickname}});
+    navigate('/dynamic-web_OXGame/quizRoom',{state: {nickname : nickname, room: room}}); // (정수) 게임시작 - 파라미터 조정
   }
 
   return (
     <div>
-      <h1>WatingRoom</h1>
+      <h1>WaitingRoom</h1>
       <ul>
         <li>
           <div>
-            <h3>WatingRoom</h3>
+            <h3>WaitingRoom</h3>
               <h2>내 정보</h2>
               <p>Nickname: { '' + nickname }</p>
               <p>Connected: { '' + isConnected }</p>

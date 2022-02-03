@@ -8,7 +8,8 @@ const Menu = () =>{
                 <li><Link to="/dynamic-web_OXGame/login">Login</Link></li>
                 <li><Link to="/dynamic-web_OXGame">Home</Link></li>
                 <li><Link to="/dynamic-web_OXGame/main">Main</Link></li>
-                <li><Link to="/dynamic-web_OXGame/insert">Insert</Link></li>
+                {/* <li><Link to="/dynamic-web_OXGame/insert">Insert</Link></li> */}
+                <li><Link to="/dynamic-web_OXGame/createquiz">CreateQuiz</Link></li>
                 <li><Link to="/dynamic-web_OXGame/managequiz">ManageQuiz</Link></li>
             </ul>
             <hr/>

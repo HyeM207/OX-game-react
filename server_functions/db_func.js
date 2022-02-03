@@ -7,15 +7,14 @@ const cors = require("cors");
 
 const mongoose = require('mongoose');
 const Quiz = require('../schemas/quiz');
+const room = require("../schemas/room");
 const { resolve } = require("path");
-const { reject } = require("nunjucks/src/filters");
-
-
 
 //===== Mongo DB ====
 //MongoDB 연결
 mongoose.connect('mongodb://localhost:27017/nodejs'); // 포트번호 뒤에 nodejs는 사용할 DB 이름 (현재는 nodejs DB를 사용)
 var db = mongoose.connection;
+
 // 연결 실패
 db.on('error', function(){
     console.log('Connection Failed!');
@@ -58,8 +57,49 @@ func.ExtractQuiz = function(nickname){
                 resolve(quiz);
             }
         });
+    }) 
+}
 
-    })
+// 특정 id 가진 퀴즈 삭제 함수
+func.DeleteQuiz = function(q_id){
+    console.log('Delete Quiz 함수 호출');
+
+    Quiz.deleteOne({_id: q_id}, function(error){
+        if(error) { console.log(error); }
+        else { console.log('QUIZ 삭제 완료'); }
+    });
+
+}
+
+// 퀴즈 목록 불러오기 
+func.loadQuiz = function(nickname){
+    console.log('[db_func] loadQuiz 함수 호출, settings : ', nickname);
+ 
+    return new Promise((resolve)=>{
+        Quiz.find({manager: nickname}, function(error, quizzes){
+            console.log('--- Read Quiz ---');
+            if(error){
+                console.log(error);
+            }else{
+                resolve(quizzes);
+            }
+        });
+    });
+}
+
+
+// 데이터 INSERT QUIZ 함수
+func.InsertRoom = function(roomData){
+    console.log('INSERT Room 함수 호출');
+
+    var newRoom = new room(roomData);
+    newRoom.save(function(error, data){
+        if(error){
+            console.log(error);
+        }else{
+            console.log('New Room Saved!');
+        }
+    });
 }
 
 // 특정 nickname 가진 퀴즈 추출 함수

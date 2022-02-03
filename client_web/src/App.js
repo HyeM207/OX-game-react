@@ -10,7 +10,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import {Home, Main, Login, Insert, WaitingRoom, ManageQuiz, QuizRoom, QuizResult, QuizAnswer} from './routes';
+import {Home, Main, Login, WaitingRoom, ManageQuiz, EditQuiz, CreateRoom, QuizRoom, QuizResult, QuizAnswer} from './routes';
 import io from "socket.io-client";
 import './App.css';
 import ReactDOM from 'react-dom'; 
@@ -38,11 +38,13 @@ function App() {
             <Route path="/dynamic-web_OXGame/main" element={<Main/>}/>
             <Route path="/dynamic-web_OXGame/login" element={<Login/>}/>
             <Route path="/dynamic-web_OXGame/waitingRoom" element={<WaitingRoom/>}/>
-	          <Route path="/dynamic-web_OXGame/insert" element={<Insert/>}/>
+            <Route path="/dynamic-web_OXGame/createRoom" element={<CreateRoom/>}/>
+            <Route path="/dynamic-web_OXGame/createquiz" element={<CreateQuiz/>}/>
             <Route path="/dynamic-web_OXGame/managequiz" element={<ManageQuiz/>}/>
             <Route path="/dynamic-web_OXGame/quizRoom" element={<QuizRoom/>}/>
             <Route path="/dynamic-web_OXGame/quizResult" element={<QuizResult/>}/>
             <Route path="/dynamic-web_OXGame/quizAnswer" element={<QuizAnswer/>}/>
+            <Route path="/dynamic-web_OXGame/editquiz" element={<EditQuiz/>}/>
           </Routes>
     </div>
   );
