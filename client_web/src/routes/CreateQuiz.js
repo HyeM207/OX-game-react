@@ -7,9 +7,8 @@ const CreateQuiz = () => {
     const navigate = useNavigate();
 
     const location = useLocation();
-    // const nickname = location.state.nickname;
-    // console.log('nicknameCREATEQUIZ: ', nickname);
-    const nickname ='WOO';
+    const nickname = location.state.nickname;
+    console.log('nicknameCREATEQUIZ: ', nickname);
 
     const now = new Date();
     const date = now.getFullYear() + '.' + (now.getMonth()+1) + '.' + now.getDate();

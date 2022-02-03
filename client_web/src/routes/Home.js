@@ -82,6 +82,11 @@ import {useLocation, useNavigate} from "react-router-dom";
     navigate('/dynamic-web_OXGame/createRoom',{state :{nickname : nickname}});
   }
 
+  const ManageQuiz = () => {
+    console.log('퀴즈 관리 페이지로 이동합니다.');
+    navigate('/dynamic-web_OXGame/managequiz',{state :{nickname : nickname}});
+  }
+
  
    return (
      <div>
@@ -94,7 +99,8 @@ import {useLocation, useNavigate} from "react-router-dom";
          <div>
            <p>  <input onChange={ONCHANGEROOM} value={room} type="text"/>
              <button onClick={ENTERWAITING} > 방 입장</button></p>
-           <p><button onClick={InsertPage}>문제 출제</button></p>
+           <p><button onClick={InsertPage}>퀴즈 생성</button></p>
+           <p><button onClick={ManageQuiz}>퀴즈 관리</button></p>
            <p><button onClick={CreateRoom}>방 생성</button></p>
          </div>
        </header>
