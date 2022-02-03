@@ -56,23 +56,23 @@ db.once('open', function() {
 });
 
 
-// 6. Schema 생성_Quiz 객체 생성해 값 입력
-const problem1 = {
-    question : "aaa",
-    answer : "false",
-    round : 1
-}
-const problem2 = {
-    question : "BBBBBB",
-    answer : "true",
-    round : 2
-}
+// // 6. Schema 생성_Quiz 객체 생성해 값 입력
+// const problem1 = {
+//     question : "aaa",
+//     answer : "false",
+//     round : 1
+// }
+// const problem2 = {
+//     question : "BBBBBB",
+//     answer : "true",
+//     round : 2
+// }
 
-const problemArr = [problem1, problem2];
-console.log(problemArr);
+// const problemArr = [problem1, problem2];
+// console.log(problemArr);
 
-// Quiz 객체로 바꿔줌
-var newQuiz = new Quiz({manager:'Woo', problem_num:2, problems: problemArr, title:'TEST QUIZ'});
+// // Quiz 객체로 바꿔줌
+// var newQuiz = new Quiz({manager:'Woo', problem_num:2, problems: problemArr, title:'TEST QUIZ'});
 
 
 // 데이터 Insert  

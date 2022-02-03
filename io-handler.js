@@ -43,15 +43,15 @@
 const url = require('url');
 const func = require('./server_functions/db_func');
 
-
-
-
 module.exports = (io) => {
     
     var gameserver = io.of("dynamic-web_OXGame");
     
     let numUsers = 0; // 방 인원
     let users = [];
+
+    var roundChoice = [];  // 라운드 별 선택한 답 {nickname: string, round: int, answer: string}
+    var rank = []; // 순위 닉네임 저장 {rank: int, nickname: string}
     
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
@@ -72,8 +72,6 @@ module.exports = (io) => {
             console.log('[add user] data: ',data);
             if (addedUser) return;
 
-            
-            
             // // we store the username in the socket session for this client
             var nickname = data.nickname;
             var room = data.room;
@@ -166,7 +164,59 @@ module.exports = (io) => {
             });
             
         })
-    })
 
-    
+
+        // =========== Find QUIZ ===================
+        socket.on("get quiz", (data) => {
+            console.log("서버에서 퀴즈 추출해 전송");
+            console.log('io-handler find quiz : ', data);
+
+            func.FindQuiz().then(function (quiz){
+                socket.emit('quiz', quiz);
+                console.log('findQuiz quiz : ', quiz);
+                console.log('추출된 퀴즈들 전송 완료');
+            });
+        })
+
+        // 답 선택
+        socket.on("choiceAnswer", (data) => {
+            console.log("클라이언트에서 서버로 선택한 답 전송");
+            console.log("받은 데이터 : ", data);
+            console.log("받은 데이터의 닉네임 : ", data.nickname);
+            console.log("시작 시 roundChoice : ", roundChoice);
+
+            const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data.nickname});
+            console.log("삭제할 데이터 : ", idx);
+            if (idx != -1) {
+                console.log("데이터 삭제하기");
+                roundChoice.splice(idx, 1);
+            }
+
+            console.log("삭제 후 roundChoice : ", roundChoice);
+
+            roundChoice.push(data);
+            console.log("push까지 한 roundChoice : ", roundChoice);
+            socket.emit('usersChoice', roundChoice);
+        })
+
+        // 탈락한 인원 roundChoice에서 제외 시키기
+        socket.on("outQuiz", (data) => {
+            console.log("탈락한 사람의 닉네임 : ", data);
+            rank.push(data);
+
+            const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data});
+            console.log("삭제할 데이터 : ", idx);
+            if (idx != -1) {
+                console.log("데이터 삭제하기");
+                roundChoice.splice(idx, 1);
+            }
+        })
+
+        socket.on("endQuiz", (data) => {
+            console.log("퀴즈가 종료 됨 : ", data);
+            console.log("퀴즈 종료 : ", rank);
+
+            socket.emit("rankQuiz", rank);
+        })
+    })
 }

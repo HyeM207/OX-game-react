@@ -60,8 +60,30 @@ func.ExtractQuiz = function(nickname){
         });
 
     })
-    
-    
+}
+
+// 특정 nickname 가진 퀴즈 추출 함수
+func.FindQuiz = function(){
+    return new Promise((resolve)=>{
+        console.log('Find Quiz 함수 호출');
+                
+        Quiz.find(function(error, data){
+            if(error){
+                console.log(error);
+            }else{
+                console.log('find : ', data);
+                data.forEach(function(element){
+                    console.log("get quiz!!", element);
+                    title = element.title;
+                    problems = element.problems;
+        
+                    quiz = {'title': title, 'problems': problems};
+                    console.log('quiz list : ', quiz);
+                    resolve(quiz);
+                });
+            }
+        });
+    })
 }
 
 module.exports = func;

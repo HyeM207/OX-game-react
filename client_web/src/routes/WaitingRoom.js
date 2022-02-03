@@ -68,7 +68,7 @@ const WaitingRoom = () => {
 
   const ENTERGAME = () =>{
     console.log('[WatingRoom] nickname:', nickname);
-    navigate('/dynamic-web_OXGame',{state: {nickname : nickname}});
+    navigate('/dynamic-web_OXGame/quizRoom',{state: {nickname : nickname}});
   }
 
   return (
