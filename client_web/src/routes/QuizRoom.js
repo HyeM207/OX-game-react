@@ -23,6 +23,7 @@ const QuizRoom = () => {
   
   const plzMsg = "send me problems";
   const nickname = location.state.nickname;
+  const room = location.state.room;
 
   useEffect(async() => {
     socket.emit("get quiz", plzMsg);
@@ -74,6 +75,7 @@ const QuizRoom = () => {
     );
 
     const cho = {
+      room: room,
       nickname: nickname,
       round: round,
       choice: value

@@ -10,7 +10,7 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import {Home, Main, Login, WaitingRoom, ManageQuiz, EditQuiz, CreateRoom, QuizRoom, QuizResult, QuizAnswer} from './routes';
+import {Home, Main, Login, WaitingRoom, ManageQuiz, EditQuiz, CreateQuiz, CreateRoom, QuizRoom, QuizResult, QuizAnswer} from './routes';
 import io from "socket.io-client";
 import './App.css';
 import ReactDOM from 'react-dom'; 

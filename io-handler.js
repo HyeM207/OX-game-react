@@ -87,7 +87,7 @@ module.exports = (io) => {
 
             
             socket.join(room);
-            console.log('!!!!!! ', gameserver.sockets.adapter.rooms[room]); 
+            // console.log('!!!!!! ', gameserver.sockets.adapter.rooms[room]); 
             // gameserver.sockets.clients(room)
 
             gameserver.in(room).emit('login', {
@@ -219,6 +219,7 @@ module.exports = (io) => {
         socket.on("choiceAnswer", (data) => {
             console.log("클라이언트에서 서버로 선택한 답 전송");
             console.log("받은 데이터 : ", data);
+            console.log("room id : ", data.room);
             console.log("받은 데이터의 닉네임 : ", data.nickname);
             console.log("시작 시 roundChoice : ", roundChoice);
 
@@ -233,7 +234,8 @@ module.exports = (io) => {
 
             roundChoice.push(data);
             console.log("push까지 한 roundChoice : ", roundChoice);
-            socket.emit('usersChoice', roundChoice);
+            gameserver.in(data.room).emit('usersChoice', roundChoice);
+            // socket.emit('usersChoice', roundChoice);
         })
 
         // 탈락한 인원 roundChoice에서 제외 시키기
