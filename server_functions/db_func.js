@@ -58,10 +58,18 @@ func.ExtractQuiz = function(nickname){
                 resolve(quiz);
             }
         });
+    }) 
+}
 
-    })
-    
-    
+// 특정 id 가진 퀴즈 삭제 함수
+func.DeleteQuiz = function(q_id){
+    console.log('Delete Quiz 함수 호출');
+
+    Quiz.deleteOne({_id: q_id}, function(error){
+        if(error) { console.log(error); }
+        else { console.log('QUIZ 삭제 완료'); }
+    });
+
 }
 
 module.exports = func;

@@ -160,10 +160,16 @@ module.exports = (io) => {
             console.log('nickname: ', data);
 
             func.ExtractQuiz(data).then(function (s_quizzes){
-                //console.log(s_quizzes);
-                socket.emit('s_quizzes',s_quizzes);
+                socket.emit('myQuizzes',s_quizzes);
                 console.log('추출된 퀴즈들 전송 완료');
             });
+            
+        })
+
+        // =========== DELETE QUIZ ===================
+        socket.on("drop_ID", (data) => {
+            console.log("삭제할 퀴즈 ID 수신", data);
+            func.DeleteQuiz(data);
             
         })
     })
