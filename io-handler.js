@@ -52,7 +52,7 @@ module.exports = (io) => {
     let users = [];
 
     var roundChoice = [];  // 라운드 별 선택한 답 {nickname: string, round: int, answer: string}
-    var rank = []; // 순위 닉네임 저장 {rank: int, nickname: string}
+    var rank = []; // 순위 닉네임 저장 {rank: int, nickname: string, count: int}
     
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
@@ -244,6 +244,8 @@ module.exports = (io) => {
         socket.on("get quiz", (data) => {
             console.log("서버에서 퀴즈 추출해 전송");
             console.log('io-handler find quiz : ', data);
+            roundChoice = [];
+            rank = [];
 
             func.FindQuiz().then(function (quiz){
                 socket.emit('quiz', quiz);
@@ -252,12 +254,12 @@ module.exports = (io) => {
             });
         });
 
-        // 답 선택
+        // 답 선택 (닉네임으로 중복 제거를 하였는데 id가 더 좋을 수도 있을 것 같음)
         socket.on("choiceAnswer", (data) => {
             console.log("클라이언트에서 서버로 선택한 답 전송");
-            console.log("받은 데이터 : ", data);
-            console.log("room id : ", data.room);
-            console.log("받은 데이터의 닉네임 : ", data.nickname);
+            console.log("choiceAnswer 받은 데이터 : ", data);
+            console.log("choiceAnswer room id : ", data.room);
+            console.log("choiceAnswer 받은 데이터의 닉네임 : ", data.nickname);
             console.log("시작 시 roundChoice : ", roundChoice);
 
             const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data.nickname});
@@ -277,21 +279,32 @@ module.exports = (io) => {
 
         // 탈락한 인원 roundChoice에서 제외 시키기
         socket.on("outQuiz", (data) => {
-            console.log("탈락한 사람의 닉네임 : ", data);
+            console.log("탈락한 사람의 데이터 : ", data);
+            console.log("탈락한 사람의 닉네임 : ", data.nickname);
             rank.push(data);
 
-            const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data});
+            // 데이터가 삭제 안 되어서 한 것임 (추후 삭제해도 됨 혹은 id로 구분하기)
+            const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data.nickname});
             console.log("삭제할 데이터 : ", idx);
             if (idx != -1) {
                 console.log("데이터 삭제하기");
                 roundChoice.splice(idx, 1);
             }
+            
+            console.log("삭제 후 리스트 : ", roundChoice);
+            gameserver.in(data.room).emit('usersChoice', roundChoice);
         });
 
         socket.on("endQuiz", (data) => {
-            console.log("퀴즈가 종료 됨 : ", data);
-            console.log("퀴즈 종료 : ", rank);
+            console.log("퀴즈가 종료 됨 room id : ", data);
+            console.log("퀴즈 종료 랭크 : ", rank);
 
+            //현재 객체 배열을 정렬, count가 큰 객체부터
+            rank.sort(function (a, b) { 
+                return a.count > b.count ? -1 : a.count < b.count ? 1 : 0;  
+            });
+
+            console.log("정렬 후 rank : ", rank);
             socket.emit("rankQuiz", rank);
         });
     })
