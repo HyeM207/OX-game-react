@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const Quiz = require('../schemas/quiz');
 const Room = require("../schemas/room");
 const { resolve } = require("path");
+const ObjectId = require('mongodb').ObjectId;
 
 //===== Mongo DB ====
 //MongoDB 연결
@@ -174,25 +175,36 @@ func.updateRoom = function(data){
 
 
 // 특정 nickname 가진 퀴즈 추출 함수
-func.FindQuiz = function(){
+func.FindQuiz = function(data){
     return new Promise((resolve)=>{
         console.log('Find Quiz 함수 호출');
-                
-        Quiz.find(function(error, data){
+
+        Room.find({roomPin: data}, function(error, room){
+            console.log('--- IsValidRoom ---');
             if(error){
                 console.log(error);
             }else{
-                console.log('find : ', data);
-                data.forEach(function(element){
-                    console.log("get quiz!!", element);
-                    title = element.title;
-                    problems = element.problems;
-        
-                    quiz = {'title': title, 'problems': problems};
-                    console.log('quiz list : ', quiz);
-                    resolve(quiz);
-                });
+                console.log('find quiz - room : ', room);
+                var quiz_id = new ObjectId(room[0].quizID);
+                console.log("quiz_uid : ", quiz_id);
             }
+
+            Quiz.find({_id: quiz_id}, function(error, quiz_data){
+                if(error){
+                    console.log(error);
+                }else{
+                    console.log('find quiz - quiz: ', quiz_data);
+                    quiz_data.forEach(function(element){
+                        console.log("get quiz!!", element);
+                        title = element.title;
+                        problems = element.problems;
+            
+                        quiz = {'title': title, 'problems': problems};
+                        console.log('quiz list : ', quiz);
+                        resolve(quiz);
+                    });
+                }
+            });
         });
     })
 }

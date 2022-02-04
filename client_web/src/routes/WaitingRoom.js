@@ -43,7 +43,7 @@ const WaitingRoom = () => {
       
       socket.on('game play',  ()=> {
         console.log('[socket-game play]');
-        navigate('/dynamic-web_OXGame/quizRoom', {state: {nickname : nickname, room: room, playerNum: playerNum}}); // (정수) 게임시작 - 파라미터 조정
+        navigate('/dynamic-web_OXGame/quizRoom', {state: {nickname : nickname, room: room, playerNum: playerNum, manager: manager}}); // (정수) 게임시작 - 파라미터 조정
       });
 
       socket.on('login', (data) => {

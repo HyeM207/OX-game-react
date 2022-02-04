@@ -53,6 +53,8 @@ module.exports = (io) => {
 
     var roundChoice = [];  // 라운드 별 선택한 답 {nickname: string, round: int, answer: string}
     var rank = []; // 순위 닉네임 저장 {rank: int, nickname: string, count: int}
+    var outList = [];
+    var playerList = [];
     
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
@@ -69,6 +71,8 @@ module.exports = (io) => {
 
         // when the client emits 'add user', this listens \and executes
         socket.on('add user', (data) => {
+            playerList = [];  // 임시로 정수 코드에서 필요함 (추후엔 db로 가져오거나 해야 할 것)
+
             console.log('[add user] add user 호출됨 addedUser : ', addedUser, 'user : ', data.nickname);
             console.log('[add user] data: ',data);
             if (addedUser) return;
@@ -78,7 +82,7 @@ module.exports = (io) => {
             socket.nickname = data.nickname;
             var room = data.room;
             ++numUsers;
-            users.push(socket.nickname ); //유저 목록에 추가 
+            users.push(socket.nickname); //유저 목록에 추가 
             console.log('[add user] numUseruse : ',numUsers);
             console.log('[add user *] users : ',users);
             console.log("[add user +] : " + socket.nickname  + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
@@ -246,8 +250,26 @@ module.exports = (io) => {
             console.log('io-handler find quiz : ', data);
             roundChoice = [];
             rank = [];
+            outList = [];
+            var manager = ""
 
-            func.FindQuiz().then(function (quiz){
+            func.loadRoom(data.room).then(function (room_data){
+                console.log('get quiz - room data : ', room_data);
+                console.log('get quiz - room manager : ', room_data[0].manager);
+                manager = room_data[0].manager;
+            });
+
+            if (manager != data.nickname){
+                console.log("manager : ", manager);
+                console.log("data.nickname : ", data.nickname);
+                console.log("manager != data.nickname : ", manager != data.nickname);
+                playerList.push(data.nickname);
+                console.log("player lsit 추가 : ", playerList);
+            }
+
+            gameserver.in(data.room).emit('playerList', playerList);
+
+            func.FindQuiz(data.room).then(function (quiz){
                 socket.emit('quiz', quiz);
                 console.log('findQuiz quiz : ', quiz);
                 console.log('추출된 퀴즈들 전송 완료');
@@ -282,17 +304,30 @@ module.exports = (io) => {
             console.log("탈락한 사람의 데이터 : ", data);
             console.log("탈락한 사람의 닉네임 : ", data.nickname);
             rank.push(data);
+            outList.push(data.nickname);
 
             // 데이터가 삭제 안 되어서 한 것임 (추후 삭제해도 됨 혹은 id로 구분하기)
-            const idx = roundChoice.findIndex(function(prev) {return prev.nickname === data.nickname});
-            console.log("삭제할 데이터 : ", idx);
+            var idx = roundChoice.findIndex(function(prev) {return prev.nickname === data.nickname});
             if (idx != -1) {
-                console.log("데이터 삭제하기");
+                console.log("데이터 삭제하기 : ", idx);
                 roundChoice.splice(idx, 1);
             }
-            
+
+            // 데이터가 삭제 안 되어서 한 것임 (추후 삭제해도 됨 혹은 id로 구분하기)
+            idx = playerList.findIndex(function(prev) {return prev === data.nickname});
+            if (idx != -1) {
+                console.log("데이터 추가하기 : ", idx);
+                playerList.splice(idx, 1);
+            }
+
             console.log("삭제 후 리스트 : ", roundChoice);
             gameserver.in(data.room).emit('usersChoice', roundChoice);
+
+            console.log("삭제 후 playerList 리스트 : ", playerList);
+            gameserver.in(data.room).emit('playerList', playerList);
+
+            console.log("삭제 후 outList 리스트 : ", outList);
+            gameserver.in(data.room).emit('outList', outList);
         });
 
         socket.on("endQuiz", (data) => {
@@ -305,7 +340,7 @@ module.exports = (io) => {
             });
 
             console.log("정렬 후 rank : ", rank);
-            socket.emit("rankQuiz", rank);
+            gameserver.in(data).emit('rankQuiz', rank);
         });
     })
 

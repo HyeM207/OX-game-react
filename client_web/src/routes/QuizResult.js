@@ -7,12 +7,18 @@ const QuizRoom = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  const room = location.state.room;
   const nickname = location.state.nickname;
   const quizList = location.state.quizList;
   const choices = location.state.choices;
   const count = location.state.count;
-  const [rankList, setRankList] = useState([]);
-  const total = quizList.problems.length;
+  const playerNum = location.state.playerNum;
+  const nav_loadState = location.state.loadState;
+  const nav_rankList = location.state.rankList;
+  console.log("loadState : ", nav_loadState);
+  const [rankList, setRankList] = useState(nav_rankList);
+  const [loadState, setLoadState] = useState(nav_loadState);
+  const total = quizList.problems.length
 
   useEffect(async() => {
     socket.on("rankQuiz", (data) => { // 퀴즈 순위 리스트 {rank: int, nickname: string, count: int}
@@ -23,13 +29,20 @@ const QuizRoom = () => {
 
   const enterAnswer = () => {
     console.log("quiz quizList : ", quizList);
-    navigate('/dynamic-web_OXGame/quizAnswer', {state: {nickname : nickname, quizList : quizList, choices : choices, count : count}});
+    navigate('/dynamic-web_OXGame/quizAnswer', {state: {room: room, nickname : nickname, quizList : quizList, choices : choices, count : count, playerNum: playerNum, rankList: rankList}});
+  }
+
+  const enterHome = () => {
+    console.log("quiz quizList : ", quizList);
+    navigate('/dynamic-web_OXGame', {state: {nickname : nickname}});
   }
 
   const quizResult = () => {
     console.log("quiz result choices : ", choices);
     console.log("you sovle : ", choices.length);
     console.log("you solve count : ", count);
+    console.log("ranklist : ", rankList);
+    // console("load state : ", loadState);
 
     return(
       <div>
@@ -61,11 +74,18 @@ const QuizRoom = () => {
         <br/><br/>
 
         <button onClick={enterAnswer}>정답 보기</button>
+
+        <br/><br/>
+        <button onClick={enterHome}>홈으로 이동</button>
       </div>
     );
   }
 
   const loading = () => {
+    console.log("player num  : ", playerNum);
+    console.log("rankList.length  : ", rankList.length);
+    // console("load state : ", loadState);
+
     return(
       <div>
         <h1>퀴즈 결과</h1>
@@ -83,7 +103,7 @@ const QuizRoom = () => {
   return (
     <div>
       {
-        rankList.length == 3
+        rankList.length == (playerNum-1) || loadState
         ? quizResult()
         : loading() 
       }

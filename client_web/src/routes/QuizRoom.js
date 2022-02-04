@@ -30,10 +30,14 @@ const QuizRoom = () => {
   const plzMsg = "send me problems";
   const nickname = location.state.nickname;
   const room = location.state.room;
+  const playerNum = location.state.playerNum;
+  const manager = location.state.manager;
 
   useEffect(async() => {
     console.log("room data : ", room);
-    socket.emit("get quiz", plzMsg);
+    console.log("manager : ", manager);
+    console.log("nickname : ", nickname);
+    socket.emit("get quiz", {room: room, nickname: nickname});
 
     socket.on("quiz", (data) => { // 서버로부터 데이터 받는 부분  서버에서는 socket.emit("server", data)형식으로 존재
       console.log("solve quiz!!", data);
@@ -44,7 +48,6 @@ const QuizRoom = () => {
       setQuizTitle(data.title);
       setQuizProblem(data.problems[round].question);
       setTotalNum(data.problems.length)
-      setPlayerList(playerList.concat(nickname));
       console.log("nickname : ", nickname);
       console.log("problems length : ", data.problems.length);
 
@@ -63,6 +66,17 @@ const QuizRoom = () => {
       setChoiceFalse(chFalse.join(', '));
     })
 
+    socket.on("playerList", (data) => {
+      console.log("palyer lsit 소켓에서 받아 옴 : ", data);
+      setPlayerList(data.join(', '));
+    })
+
+    socket.on("outList", (data) => {
+      console.log("out List 소켓에서 받아 옴 : ", data);
+      setOutList(data.join(', '));
+    })
+
+  
     return () => {
       socket.off('quiz');
       socket.off('usersChoice');
@@ -150,21 +164,6 @@ const QuizRoom = () => {
       setState(false);
 
       const result = {room: room, nickname: nickname, count: count};
-      console.log("추가 전 탈락자 데이터", outList);
-      console.log("삭제 전 데이터 : ", playerList);
-
-      const idx = playerList.findIndex(function(prev) {return prev == nickname});
-      console.log("삭제할 데이터 : ", idx);
-      if (idx != -1) {
-        console.log("outList 탈락자 데이터 추가 : ", idx);
-        setOutList(outList.concat(idx));
-
-        console.log("데이터 삭제하기");
-        setPlayerList(playerList.filter((player) => player !== idx));
-      }
-
-      console.log("추가 후 탈락자 데이터", outList);
-      console.log("삭제 후 데이터 : ", playerList);
 
       socket.emit('outQuiz', result);
       socket.emit('endQuiz', room);
@@ -181,25 +180,32 @@ const QuizRoom = () => {
   const onSubmitAdmin = () => {
     console.log("Admin submit!!");
     console.log("Round : ", round);
-    
-    setRound(round+1);
-    setQuizProblem(quizList.problems[round].question);
-    console.log("Round Num : ", round);
-    console.log("this round quiz", quizList.problems[round].question);
+
+    if (quizList.problems.length <= round){
+      console.log("quiz finish!!!!!!");
+      setState(false);
+    } else {
+      console.log("not yet!!!");
+      setRound(round+1);
+      setQuizProblem(quizList.problems[round].question);
+      console.log("Round Num : ", round);
+      console.log("this round quiz", quizList.problems[round].question);
+    }
   };
 
   const enterResult = () => {
     console.log("quiz quizList : ", quizList);
-    navigate('/dynamic-web_OXGame/quizResult', {state: {nickname : nickname, quizList : quizList, choices : choices, count : count}});
+    navigate('/dynamic-web_OXGame/quizResult', {state: {room: room, nickname : nickname, quizList : quizList, choices : choices, count : count, loadState: false, playerNum: playerNum, rankList: []}});
   }
 
   const quizSolve = () => {
     console.log("quizSolve() 호출!!!");
+    console.log("quizsolve() - manger", manager);
 
     return(
       <div>
         {
-          nickname == "admin"
+          manager == nickname
           ? adminPage()
           : playerPage()
         }
@@ -209,6 +215,7 @@ const QuizRoom = () => {
 
   const adminPage = () => {
     console.log("!!!admin page!!!");
+    console.log("playerList : ", playerList);
 
     return (
       <div>
@@ -226,20 +233,16 @@ const QuizRoom = () => {
           <br/><br/>
           라운드 : {round} / {totalNum}
           <table border="1" style={{margin: 'auto'}}>
-            <td>
-              <tr>현재 현황</tr>
-            </td>
+            <tr>
+              <td>현재 현황</td>
+            </tr>
 
-            <td>
-              <tr>
-                생존자 : { "" + 
-                  playerList.map((player, index) => ({player}))
-                } <br/>
-                탈락자 : { "" + 
-                  outList.map((player, index) => ({player}))
-                }
-              </tr>
-            </td>
+            <tr>
+              <td>
+                생존자 : {playerList} <br/>
+                탈락자 : {outList}
+              </td>
+            </tr>
 
           </table>
       </div>

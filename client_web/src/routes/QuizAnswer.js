@@ -8,9 +8,13 @@ const QuizAnswer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  const room = location.state.room;
   const nickname = location.state.nickname;
   const quizList = location.state.quizList;
   const choices = location.state.choices;
+  const count = location.state.count;
+  const playerNum = location.state.playerNum;
+  const rankList = location.state.rankList;
   
   const quizTitle = useState(quizList.title);
   const [quizProblem, setQuizProblem] = useState(quizList.problems[0].question);
@@ -52,7 +56,7 @@ const QuizAnswer = () => {
 
   const onSubmit = () => {
     console.log("돌아가기!!");
-    navigate('/dynamic-web_OXGame/quizResult', {state: {nickname : nickname, quizList : quizList, choices : choices}});
+    navigate('/dynamic-web_OXGame/quizResult', {state: {room: room, nickname : nickname, quizList : quizList, choices : choices, count : count, loadState: true, playerNum: playerNum, rankList: rankList}});
   }
 
   return (
