@@ -90,7 +90,7 @@ const WaitingRoom = () => {
     console.log('[WatingRoom] GAMESTART - users', users);
     let usersExcecptM  = users.filter((element) => element !== manager);
     console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
-    socket.emit('game start', {room : room, playerNum: playerNum, users: usersExcecptM});
+    socket.emit('game start', {room : room, playerNum: playerNum-1, users: usersExcecptM});
 
   }
 
