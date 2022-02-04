@@ -9,65 +9,40 @@ import {useLocation, useNavigate} from "react-router-dom";
    const navigate = useNavigate();
    const location = useLocation();
    console.log('location: ', location); 
-       
-   // 이거 안 먹음
-  //  if (location.state == ''  ) {
-  //    console.log('location.state 있음 :',location.state ,':');
-  //    navigate('dynam`ic-web_OXGame/login');
-  //  }
 
    const nickname = location.state.nickname;
    console.log('nickname: ', nickname); 
 
   
-
-   const [chats, setchats] = useState([]);
    const [isConnected, setIsConnected] = useState(socket.connected);
-  //  const [Msg, setMessage] = useState(null);
    const [room, setRoom] = useState('');
 
-  //  const addChatMessage = (data) => {
-  //     let message = '';
-  //     if (data.numUsers === 1) {
-  //       message += `there's 1 participant`;
-  //     } else {
-  //       message += `there are ${data.numUsers} participants`;
-  //     }
-  //     setchats(chats.concat(message));
+   // 이거 안 먹음
+  //  if (location.state == ''  ) {
+  //    console.log('location.state 있음 :',location.state ,':');
+  //    navigate('dynam`ic-web_OXGame/login');
   //  }
+  useEffect(async() => {    
+
+      socket.on("room permission", (data) => {
+        console.log('[socket- room permission]',data.permission, data.room);
+        if (data.permission == true){
+          console.log('[socket- room permission true]',nickname, data.room);
+          navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : data.room}});
+        }
+      });
+      
+   });
+
  
-  //  useEffect(async() => {
-       
-  //    socket.emit('add user', nickname);
-     
-  //    socket.on('login', (data) => {
-  //      setIsConnected(true);    
-  //      addChatMessage(data);
-  //    });
-  //    socket.on('user joined', (data) =>{
-  //      setchats(chats.concat(`${data.username} joined`));
-  //    })
-  //    socket.on('user left', (data) => {
-  //      setchats(chats.concat(`${data.username} left`));
-  //    });
-  //    socket.on('disconnect', () => {
-  //      setIsConnected(false);
-  //    });
-  //    socket.on('new message', (data) => {
-  //      setchats(chats.concat(`${data.username} : ${data.message}`));
-  //    });
-  //    return () => {
-  //      socket.off('login');
-  //      socket.off('disconnect');
-  //      socket.off('new message');
-  //    };
-  //  });
+
  
    const ENTERWAITING = () => {
      console.log('ENTERWAITING');
-     navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : room}});
+     socket.emit('isValidRoom',room);
+    //  navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : room}});
    }
- 
+  
    const ONCHANGEROOM = (e) =>{
       setRoom(e.target.value);
    }
