@@ -15,17 +15,36 @@ const WaitingRoom = () => {
   const room = location.state.room;
   const navigate = useNavigate();
   console.log('[WaitingRoom] nickname: ', nickname);
- 
+
   
   const [chats, setchats] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [number, setNumber] = useState(0);
+  const [playerNum, setPlayerNum] = useState(0);
   const [users, setUsers] = useState([]);
+  const [manager, setManager] = useState('');
+  const [minPlayer, setMinPlayer] = useState(0);
+  const [maxPlayer, setMaxPlayer] = useState(0);
+  const [limitedTime, setLimitedTime] = useState(0);
+
+
 
    useEffect(async() => {
     // socket.emit('add user', nickname);
      
       socket.emit('add user', {nickname: nickname, room: room});
+
+      socket.on("loadRoom", (data) => {
+        console.log('[loadRoom] data', data);
+        setMinPlayer(data[0].minPlayer);
+        setMaxPlayer(data[0].maxPlayer);
+        setLimitedTime(data[0].limitedTime);
+        setManager(data[0].manager);
+      });
+      
+      socket.on('game play',  ()=> {
+        console.log('[socket-game play]');
+        navigate('/dynamic-web_OXGame/quizRoom', {state: {nickname : nickname, room: room}}); // (정수) 게임시작 - 파라미터 조정
+      });
 
       socket.on('login', (data) => {
         console.log('[socket-login]', data.numUsers);
@@ -35,7 +54,8 @@ const WaitingRoom = () => {
 
       socket.on('user joined', (data) =>{
         console.log('[socket-user joined]', data.nickname);
-        setNumber(data.numUsers);
+        // setNumber(data.numUsers);
+        setPlayerNum(data.numUsers)
         setUsers(data.users);
         setchats(chats.concat(`${data.nickname} joined`));
       })
@@ -65,9 +85,10 @@ const WaitingRoom = () => {
   //  setNickName(e.target.value);
   }
 
-  const ENTERGAME = () =>{
-    console.log('[WatingRoom] nickname:', nickname);
-    navigate('/dynamic-web_OXGame/quizRoom',{state: {nickname : nickname, room: room}}); // (정수) 게임시작 - 파라미터 조정
+  const GAMESTART = () =>{
+    console.log('[WatingRoom] GAMESTART - room', room);
+    socket.emit('game start', {room : room, playerNum: playerNum, users: users});
+
   }
 
   return (
@@ -85,8 +106,9 @@ const WaitingRoom = () => {
 
 
               <h2>방 정보 </h2>
-              <p>room: { '' + room }</p>
-              <p>현재인원/ 최소인원: { '' + number +'/' +'미정' }</p>
+              <p>roomPin: { '' + room }</p>
+              <p>limitedTime: { '' + limitedTime }</p>
+              <p>현재인원 / 최소인원 / 최대인원: { '' + playerNum +' / ' + minPlayer + ' / ' + maxPlayer }</p>
               <p>플레이어 목록: {''+ users }</p>
 
 
@@ -97,7 +119,8 @@ const WaitingRoom = () => {
                   })}
                 </ul>
               </div>
-            <button onClick={ENTERGAME}>게임 시작</button>
+              { manager == nickname && <button onClick={GAMESTART}>게임 시작</button>}
+           
           </div>
         </li>
       </ul>

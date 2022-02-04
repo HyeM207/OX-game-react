@@ -63,9 +63,9 @@ module.exports = (io) => {
         console.log(ns);
         
         
+        // =========== Waiting Room ===================
         let addedUser = false; // added 유저 경우 
        
-
 
         // when the client emits 'add user', this listens \and executes
         socket.on('add user', (data) => {
@@ -90,19 +90,40 @@ module.exports = (io) => {
             // console.log('!!!!!! ', gameserver.sockets.adapter.rooms[room]); 
             // gameserver.sockets.clients(room)
 
+            // Room 정보 전달 
+            func.loadRoom(data.room).then(function (room){
+                console.log('[socket-loadRoom] room:',room);
+                socket.emit('loadRoom',room);
+                console.log('룸 정보 전송 완료');
+            });
+
+            // 사용자 로그인 알림
             gameserver.in(room).emit('login', {
                 numUsers: numUsers,
                 users : users
             });
 
-            // // // echo globally (all clients) that a person has connected
+            // 새 사용자 입장 알림 
+            //  echo globally (all clients) that a person has connected
             gameserver.in(room).emit('user joined', {
                 nickname: socket.nickname,
                 numUsers: numUsers,
                 users : users
             });
+
         });
 
+
+
+        // WaitingRoom에서 관리자가 게임 시작 버튼을 눌렀을 경우
+        socket.on('game start', (data) => {
+            console.log('[game start] data: ', data);
+
+            func.updateRoom(data).then(function (result){
+                console.log('[socket-IsValidRoom-Then] result:',result);  
+                gameserver.in(data.room).emit('game play');
+            });
+        })
 
         // when the user disconnects.. perform this
         socket.on('disconnect', (data) => {
@@ -125,7 +146,7 @@ module.exports = (io) => {
         socket.on("test", (data) => {
             console.log(data);
             socket.emit("server", "hello22");
-        })
+        });
         
         socket.on("join", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에 join 해주는 함수임
             console.log("[join]", data);
@@ -137,7 +158,8 @@ module.exports = (io) => {
             // room이름(data.room)을 고유번호5자리 등으로 하여 참가자들이 join할 때 마다 즉, 여기 함수로 들어올 때마다
             // firebase에 사용자 이름(data.username)을 해당 룸 하위에 추가하면 될 것 같음
     
-        })
+        });
+
         socket.on("leave", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에서 leave해주는 함수임
             console.log(data);
             //socket.leave(data.room);
@@ -145,8 +167,23 @@ module.exports = (io) => {
             // room이름(data.room)을 고유번호5자리 등으로 하여 참가자들이 leave할 때 마다 즉, 여기 함수로 들어올 때마다
             // firebase에 사용자 이름(data.username)을 해당 룸 하위에 제거해주면 될 것 같음
             
-        })
+        });
         // 그리고 만약 해당 퀴즈가 끝나면 Redis channel 삭제 예정
+
+
+        // =========== HOME  ===================
+        socket.on("isValidRoom", (room) => {
+            console.log('[socket-isValidRoom] room:',room);
+
+            func.IsValidRoom(room).then(function (permission){
+                console.log('[socket-IsValidRoom-Then] permission:',permission);
+                socket.emit('room permission',{
+                    permission: permission,
+                    room: room
+                });
+    
+            });  
+        });
 
         // ============ QUIZ INSERT ==================
         socket.on("quiz", (data) => {
@@ -154,7 +191,7 @@ module.exports = (io) => {
             console.log(data);
             console.log(data.problems[0]);
             func.InsertQuiz(data);
-        })
+        });
 
 
         // ===== CreateRoom =====
@@ -166,21 +203,21 @@ module.exports = (io) => {
                 socket.emit('showQuiz',quizzes);
                 console.log('추출된 퀴즈들 전송 완료');
             });
-        })
+        });
 
 
         socket.on("createRoom", (room) =>{
             console.log('[socket-createRoom] 호출됨');
-            console.log('수정 전 ', room);
+            // console.log('수정 전 ', room);
             room['creationDate'] = nowDate();
             room['roomPin'] = randomN();
-            console.log('수정 후 ', room);
+            // console.log('수정 후 ', room);
            func.InsertRoom(room);
 
            socket.emit('succesCreateRoom', {
                 roomPin: room.roomPin
             });
-        })
+        });
 
         // =========== EXTRACT QUIZ ===================
         socket.on("nickname", (data) => {
@@ -192,14 +229,14 @@ module.exports = (io) => {
                 console.log('추출된 퀴즈들 전송 완료');
             });
             
-        })
+        });
 
         // =========== DELETE QUIZ ===================
         socket.on("drop_ID", (data) => {
             console.log("삭제할 퀴즈 ID 수신", data);
             func.DeleteQuiz(data);
             
-        })
+        });
 
 
 
@@ -213,7 +250,7 @@ module.exports = (io) => {
                 console.log('findQuiz quiz : ', quiz);
                 console.log('추출된 퀴즈들 전송 완료');
             });
-        })
+        });
 
         // 답 선택
         socket.on("choiceAnswer", (data) => {
@@ -236,7 +273,7 @@ module.exports = (io) => {
             console.log("push까지 한 roundChoice : ", roundChoice);
             gameserver.in(data.room).emit('usersChoice', roundChoice);
             // socket.emit('usersChoice', roundChoice);
-        })
+        });
 
         // 탈락한 인원 roundChoice에서 제외 시키기
         socket.on("outQuiz", (data) => {
@@ -249,14 +286,14 @@ module.exports = (io) => {
                 console.log("데이터 삭제하기");
                 roundChoice.splice(idx, 1);
             }
-        })
+        });
 
         socket.on("endQuiz", (data) => {
             console.log("퀴즈가 종료 됨 : ", data);
             console.log("퀴즈 종료 : ", rank);
 
             socket.emit("rankQuiz", rank);
-        })
+        });
     })
 
 

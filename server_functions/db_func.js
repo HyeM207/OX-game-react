@@ -7,7 +7,7 @@ const cors = require("cors");
 
 const mongoose = require('mongoose');
 const Quiz = require('../schemas/quiz');
-const room = require("../schemas/room");
+const Room = require("../schemas/room");
 const { resolve } = require("path");
 
 //===== Mongo DB ====
@@ -87,12 +87,28 @@ func.loadQuiz = function(nickname){
     });
 }
 
+// 룸 정보 불러오기 
+func.loadRoom= function(roomPin){
+    console.log('[db_func] loadRoom 함수 호출, roomPin : ', roomPin);
+ 
+    return new Promise((resolve)=>{
+        Room.find({roomPin: roomPin}, function(error, room){
+            console.log('--- loadRoom ---');
+            if(error){
+                console.log(error);
+            }else{
+                resolve(room);
+            }
+        });
+    });
+}
 
-// 데이터 INSERT QUIZ 함수
+
+// 방 생성 함수 
 func.InsertRoom = function(roomData){
     console.log('INSERT Room 함수 호출');
 
-    var newRoom = new room(roomData);
+    var newRoom = new Room(roomData);
     newRoom.save(function(error, data){
         if(error){
             console.log(error);
@@ -101,6 +117,61 @@ func.InsertRoom = function(roomData){
         }
     });
 }
+
+// 유효한 방인지 확인하는  함수 
+func.IsValidRoom = function(roomPin){
+    console.log('IsValidRoom 함수 호출');
+
+    return new Promise((resolve)=>{
+        Room.find({roomPin: roomPin}, function(error, room){
+            console.log('--- IsValidRoom ---');
+            if(error){
+                console.log(error);
+          
+            }else{
+                if (room.length != 0){
+                    resolve(true);
+                } else{
+                    resolve(false);
+                }
+            }
+        });
+    });
+}
+
+// 게임 시작 시 룸 정보 업데이트 
+func.updateRoom = function(data){
+    console.log('updateRoom 함수 호출 data.room', data.room, data.playerNum);
+
+    return new Promise((resolve)=>{
+        Room.find({roomPin: data.room}, function(error, room){
+            console.log('--- IsValidRoom ---');
+            if(error){
+                console.log(error);
+            }else{
+              room[0]['players_num'] = data.playerNum;
+              room[0]['players'] = data.users;
+
+              console.log('수정된 room', room);
+              // 수정 사항 저장 
+              var updatedRoom = new Room(room[0]);
+              console.log('새 room', updatedRoom)
+              updatedRoom.save(function(error, data){
+                // room.save(function(error, data){  
+                    if(error){
+                      console.log(error);
+                  }else{
+                      console.log('Room Updated!');
+                      resolve(true);
+                  }
+              });
+
+            }
+        });
+    });
+}
+
+
 
 // 특정 nickname 가진 퀴즈 추출 함수
 func.FindQuiz = function(){

@@ -80,8 +80,8 @@ const CreateRoom = () => {
 
         var room = {
             manager : nickname,
-            // creationDate : ,
-            // endDate: (waiting 룸에서 설정)
+            // creationDate : (서버단에서), -> ok
+            // endDate: (게임 end에서 설정)
             isActive : true,
             // players_num: (waiting 룸에서 설정)
             maxPlayer : maxPlayer,
@@ -89,7 +89,7 @@ const CreateRoom = () => {
             limitedTime : limitedTime,
             //players : (waiting 룸에서 설정)
             quizID : quizID
-            // roomPin: (서버단에서)
+            // roomPin: (서버단에서)-> ok
         }
         socket.emit('createRoom', room);
 
