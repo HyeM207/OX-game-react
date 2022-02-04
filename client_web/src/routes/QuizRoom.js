@@ -149,10 +149,14 @@ const QuizRoom = () => {
       console.log("count 틀린 문제 전 라운드로 : ", count);
       console.log("choice 제발 공백 : ", choice);
 
-      // const result = {nickname: nickname, count: count};
-      // socket.emit('outQuiz', result);
-
-    } else if (choice != "") {
+    } else if (quizList.problems[round-1].answer != choice) {
+      console.log("you choice wrong answer!!!");
+      setCount(round - 1);
+      setButtonState(true);
+      setChoice("");
+      console.log("count 틀린 문제 전 라운드로 : ", count);
+      console.log("choice 제발 공백 : ", choice);
+    }else if (choice != "") {
       setCount(quizList.problems.length);
       console.log("count 다 풀었으면 6 : ", count);
       console.log("My choice : ", choice);
@@ -184,6 +188,7 @@ const QuizRoom = () => {
     if (quizList.problems.length <= round){
       console.log("quiz finish!!!!!!");
       setState(false);
+      socket.emit('endQuiz', room);
     } else {
       console.log("not yet!!!");
       setRound(round+1);
