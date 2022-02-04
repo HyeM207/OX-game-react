@@ -42,6 +42,11 @@ const ManageQuiz = () => {
         navigate("/dynamic-web_OXGame/createquiz",{state : {nickname : nickname}});
     }
 
+    // HOME 버튼 클릭 => HOME으로 이동
+    const onClickHome = () => {
+        navigate('/dynamic-web_OXGame',{state : {nickname : nickname}});
+    }
+
 
     return (
         <div>
@@ -68,7 +73,9 @@ const ManageQuiz = () => {
                 ))}
             </table>
             <br/>
-            <button onClick={onClickCreate}>퀴즈 출제하러 가기</button>     
+            <button onClick={onClickCreate}>퀴즈 출제하러 가기</button> 
+            <br/>
+            <button onClick={onClickHome}>HOME</button>    
         </div>
 
     );
