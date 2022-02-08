@@ -9,10 +9,11 @@ const QuizRoom = () => {
   
   const room = location.state.room;
   const nickname = location.state.nickname;
+  const manager = location.state.manager;
   const quizList = location.state.quizList;
   const choices = location.state.choices;
   const count = location.state.count;
-  const playerNum = location.state.playerNum;
+  // const playerNum = location.state.playerNum;
   const nav_loadState = location.state.loadState;
   const nav_rankList = location.state.rankList;
   console.log("loadState : ", nav_loadState);
@@ -29,7 +30,7 @@ const QuizRoom = () => {
 
   const enterAnswer = () => {
     console.log("quiz quizList : ", quizList);
-    navigate('/dynamic-web_OXGame/quizAnswer', {state: {room: room, nickname : nickname, quizList : quizList, choices : choices, count : count, playerNum: playerNum, rankList: rankList}});
+    navigate('/dynamic-web_OXGame/quizAnswer', {state: {room: room, nickname : nickname, manager : manager, quizList : quizList, choices : choices, count : count, rankList: rankList}});
   }
 
   const enterHome = () => {
@@ -82,7 +83,7 @@ const QuizRoom = () => {
   }
 
   const loading = () => {
-    console.log("player num  : ", playerNum);
+    // console.log("player num  : ", playerNum);
     console.log("rankList.length  : ", rankList.length);
     // console("load state : ", loadState);
 
@@ -103,9 +104,10 @@ const QuizRoom = () => {
   return (
     <div>
       {
-        rankList.length == (playerNum-1) || loadState
-        ? quizResult()
-        : loading() 
+        quizResult()
+        // rankList.length == (playerNum) || loadState
+        // ? quizResult()
+        // : loading() 
       }
     </div>
   );
