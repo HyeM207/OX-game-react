@@ -74,7 +74,7 @@ import '../css/bootstrap.min.css'
      <div style={{width: "100%"}}>
      
       <Menu />
-      <div class="card bg-secondary mb-3" style={{ margin : "5px" , "max-width" : "20rem"}}>
+      <div class="card bg-secondary mb-3" style={{ margin : "auto" , marginTop: "50px", "max-width" : "20rem"}}>
         <div class="card-header">My Info</div>
         <div class="card-body">
           <h4 class="card-title">{nickname}</h4>
@@ -88,7 +88,7 @@ import '../css/bootstrap.min.css'
       <div style={{ position: "absolute", top: "55%", left: "50%", transform: "translate(-50%,-50%)"}}>
         <div class="d-grid gap-2">
           <h4>{message}</h4>
-          <input onChange={ONCHANGEROOM} value={room} type="text"  placeholder="RoomPin (5 Number)"/>
+          <input onChange={ONCHANGEROOM} value={room} type="text"  placeholder="RoomPin (5 Number)" style={{height: '50px'}}/>
           <button class="btn btn-lg btn-primary" type="button" onClick={ENTERWAITING}>Enter QuizRoom</button>
           <button class="btn btn-secondary" type="button" onClick={InsertPage}>Create Quiz</button>
           <button class="btn btn-success" type="button" onClick={ManageQuiz}>Manage Quiz</button>
