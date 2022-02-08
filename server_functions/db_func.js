@@ -197,9 +197,10 @@ func.FindQuiz = function(data){
                     quiz_data.forEach(function(element){
                         console.log("get quiz!!", element);
                         title = element.title;
+                        manager = element.manager;
                         problems = element.problems;
             
-                        quiz = {'title': title, 'problems': problems};
+                        quiz = {'title': title, 'manager': manager, 'problems': problems};
                         console.log('quiz list : ', quiz);
                         resolve(quiz);
                     });

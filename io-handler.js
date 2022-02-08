@@ -251,23 +251,16 @@ module.exports = (io) => {
             roundChoice = [];
             rank = [];
             outList = [];
-            var manager = ""
+            var playerNum = 0;
 
             func.loadRoom(data.room).then(function (room_data){
                 console.log('get quiz - room data : ', room_data);
                 console.log('get quiz - room manager : ', room_data[0].manager);
-                manager = room_data[0].manager;
+                playerList = room_data[0].players;
+                playerNum = room_data[0].players_num;
+                console.log("player list : ", playerList);
+                gameserver.in(data.room).emit('playerList', playerList);
             });
-
-            if (manager != data.nickname){
-                console.log("manager : ", manager);
-                console.log("data.nickname : ", data.nickname);
-                console.log("manager != data.nickname : ", manager != data.nickname);
-                playerList.push(data.nickname);
-                console.log("player lsit 추가 : ", playerList);
-            }
-
-            gameserver.in(data.room).emit('playerList', playerList);
 
             func.FindQuiz(data.room).then(function (quiz){
                 socket.emit('quiz', quiz);
