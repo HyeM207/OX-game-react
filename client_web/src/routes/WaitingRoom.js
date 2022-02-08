@@ -6,15 +6,14 @@ import {useNavigate, useLocation} from 'react-router-dom';
 const WaitingRoom = () => {
 
   const location = useLocation();
-  console.log('WaitingRoom에서 호출됨');
-  console.log('[WaitingRoom] location: ', location); 
+  // console.log('WaitingRoom에서 호출됨');
+  // console.log('[WaitingRoom] location: ', location); 
   
   // 닉네임 설정
- 
   const nickname = location.state.nickname;
   const room = location.state.room;
   const navigate = useNavigate();
-  console.log('[WaitingRoom] nickname: ', nickname);
+  // console.log('[WaitingRoom] nickname: ', nickname);
 
   
   const [chats, setchats] = useState([]);
@@ -26,11 +25,8 @@ const WaitingRoom = () => {
   const [maxPlayer, setMaxPlayer] = useState(0);
   const [limitedTime, setLimitedTime] = useState(0);
 
-
-
-   useEffect(async() => {
-    // socket.emit('add user', nickname);
-     
+  // 한번만 호출
+  useEffect(() => {
       socket.emit('add user', {nickname: nickname, room: room});
 
       socket.on("loadRoom", (data) => {
@@ -40,6 +36,22 @@ const WaitingRoom = () => {
         setLimitedTime(data[0].limitedTime);
         setManager(data[0].manager);
       });
+      
+  },[]);
+
+   // 랜더링 및 값 바뀔 때마다 호출
+  useEffect(async() => {
+    // socket.emit('add user', nickname);
+     
+      // socket.emit('add user', {nickname: nickname, room: room});
+
+      // socket.on("loadRoom", (data) => {
+      //   console.log('[loadRoom] data', data);
+      //   setMinPlayer(data[0].minPlayer);
+      //   setMaxPlayer(data[0].maxPlayer);
+      //   setLimitedTime(data[0].limitedTime);
+      //   setManager(data[0].manager);
+      // });
       
       socket.on('game play',  ()=> {
         console.log('[socket-game play]');
@@ -75,7 +87,7 @@ const WaitingRoom = () => {
      return () => {
           socket.off('login');
           socket.off('disconnect');
-    //    socket.off('new message');
+          socket.off('loadRoom');
           socket.off('join');
      };
    });
@@ -95,39 +107,53 @@ const WaitingRoom = () => {
   }
 
   return (
-    <div>
-      <h1>WaitingRoom</h1>
-      <ul>
-        <li>
-          <div>
-            <h3>WaitingRoom</h3>
-              <h2>내 정보</h2>
-              <p>Nickname: { '' + nickname }</p>
-              <p>Connected: { '' + isConnected }</p>
-              <p>socket ID: {`(${socket.id})` }</p> 
+    <div style={{ width : "100%"}}>
+      <Menu />
+      
+      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "13rem", float: "left"}} >
+        <div class="card-header">My Info</div>
+        <div class="card-body">
+          <h4 class="card-title">{nickname}</h4>
+          <p class="card-text"> Connected: { '' + isConnected } </p>
+          <p class="card-text"> socket ID: {`(${socket.id})` }</p>
+        </div>
+      </div>
 
+      <div class="card bg-light mb-3" style={{ width: "25%", height : "13rem", float: "right"}} >
+        <div class="card-header">Log</div>
+        <div class="card-body" style={{ "overflow-y" : "scroll"}}>
+          <h4 class="card-title">Entering</h4>
+          {chats.map((val, index) => {
+                  return (<p key={index}>{val}</p>);
+          })}
+        </div>
+      </div>
 
+      <div class="card text-white bg-primary mb-3"style={{  width: "50%", height : "13rem"}}  >
+        <div class="card-header">Room Info</div>
+        <div class="card-body">
+          <h4 class="card-title">{room}</h4>
+          <p class="card-text">현재인원 / 최소인원 / 최대인원: { '' + playerNum +' 명 /  ' + minPlayer + ' 명 / ' + maxPlayer + ' 명'}</p>
+          <p class="card-text">limitedTime: { '' + limitedTime }</p>
+        </div>
+      </div>
 
-              <h2>방 정보 </h2>
-              <p>roomPin: { '' + room }</p>
-              <p>limitedTime: { '' + limitedTime }</p>
-              <p>현재인원 / 최소인원 / 최대인원: { '' + playerNum +' / ' + minPlayer + ' / ' + maxPlayer }</p>
-              <p>플레이어 목록: {''+ users }</p>
+   
+      <div style={{ "margin-left" : "15%", "margin-right" : "15%"}}>
+        <h2> Player List </h2>
+        <div style={{ "overflow-y" : "scroll"}}>
+          {users.map((user, index) => {
+              return (<button  key={index}  type="button" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{user}</button>);
+          })}
+          {/* <p>플레이어 목록: {''+ users }</p> */}
+        </div>
 
+      </div>
 
-              <div className="scrollBlind">
-                <ul class ="message">
-                  {chats.map((val, index) => {
-                    return (<li key={index}>{val}</li>);
-                  })}
-                </ul>
-              </div>
-              { manager == nickname && <button onClick={GAMESTART}>게임 시작</button>}
-           
-          </div>
-        </li>
-      </ul>
+      { manager == nickname && <button onClick={GAMESTART} type="button" class="btn btn-success" style={{  position: "absolute", top: "90%", left: "50%", transform: "translate(-50%,-50%)"}} >게임 시작</button>}
+
     </div>
+    
   );
 
 };
