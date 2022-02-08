@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { socket } from '../components';
 import { useNavigate, useLocation } from 'react-router-dom';
+import "../css/bootstrap.css";
 
 const Insert = () => {
 

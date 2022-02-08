@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {socket} from '../components';
 import {useNavigate, useLocation } from 'react-router-dom';
+import "../css/bootstrap.css";
 
 const CreateQuiz = () => {
     
@@ -17,6 +18,7 @@ const CreateQuiz = () => {
     const [problems, setProblems] = useState([]);
     const [inputs, setInputs] = useState({ newQuestion: '', newAnswer: '' });
     const { newQuestion, newAnswer } = inputs;
+    const [textvisible, setTextVisible] = useState(false);
 
     // 퀴즈 제목 수정
     const onChangeTitle = (e) => { setTitle(e.target.value); }
@@ -71,7 +73,15 @@ const CreateQuiz = () => {
     }
 
     // 문제 추가 버튼 클릭
-    const onCreate = () => {
+    const onCreate = (e) => {
+        // 입력값 확인 => 경고문구 show/hidden
+        if(newQuestion=="" || newAnswer==""){
+            setTextVisible(true);
+            return;
+        } else {
+            setTextVisible(false);
+        }
+
         var num = problems.length+1;
         setProblems((prev) => [
             ...prev,
@@ -86,6 +96,12 @@ const CreateQuiz = () => {
 
     // 퀴즈 수정 완료 버튼 클릭
     const onSubmit = () =>{
+        // 퀴즈이름 확인 => 경고창
+        if(title==""){
+            alert("퀴즈 이름을 입력하세요.");
+            return;
+        } 
+
         problems.map((value, index) => {
             value.round = index+1;
         });
@@ -106,47 +122,71 @@ const CreateQuiz = () => {
         navigate("/dynamic-web_OXGame/managequiz", {state : {nickname : nickname}});
     }
 
+    // HOME 버튼 클릭 => HOME으로 이동
+    const onClickHome = () => {
+        navigate('/dynamic-web_OXGame',{state : {nickname : nickname}});
+    }
+
     return (
         <div>
-            <h1>CREATE QUIZ PAGE</h1>
-            <h3>TITLE: <input type="text" value={title} onChange={onChangeTitle}/></h3>
-            {/*===============================================================*/}
-            <table style={{margin: 'auto'}}>
-                <thead>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                <div class="container-fluid">
+                <a class="navbar-brand" onClick={onClickHome}>HOME</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+            </nav>
+            
+            <br/><h1>CREATE QUIZ PAGE</h1><br/>
+            <div>
+                <table style={{margin: 'auto', width: '50%'}} >
                     <tr>
-                        <td>idx</td>
-                        <td>Question</td>
-                        <td>Answer</td>
-                        <td>Function</td>
+                        <th style={{paddingTop: '1rem'}}>퀴즈 이름</th>
+                        <td><input type="text" class="form-control" value={title} onChange={onChangeTitle} placeholder="퀴즈 이름을 입력하세요."/></td>
+                    </tr>
+                </table>
+            </div>
+            <br></br>
+
+            <table class="table" style={{margin: 'auto', width: '80%'}}>
+                <thead>
+                    <tr class="table-primary bg-primary">
+                        <th>idx</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Function</th>
                     </tr>
                 </thead>
 
-                {problems.map((value, index) => (
+                <tbody>
+                    {problems.map((value, index) => (
+                        <tr>
+                            <td><label style={{padding: '0.5rem'}}>{index+1}</label></td>
+                            <td><input name="question" class="form-control" style={{padding: '0.5rem'}} id={"question-"+String(index+1)} value={value.question} onChange={onChangeQuestion}/></td>
+                            <td class="form-group">
+                                <input type="radio" class="form-check-input" style={{margin: '0.5rem'}} id={"answer-"+String(index+1)} checked={value.answer==="true"} value="true"  name={"answer-"+String(index+1)} onClick={onChangeOption} /> <label style={{padding: '0.5rem'}}>O &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</label>
+                                <input type="radio" class="form-check-input" style={{margin: '0.5rem'}} id={"answer-"+String(index+1)} checked={value.answer==="false"} value="false" name={"answer-"+String(index+1)} onClick={onChangeOption} /> <label style={{padding: '0.5rem'}}>X</label>
+                            </td>
+                            <td><button onClick={onClickDelete} id={"problem-"+String(index+1)} class="btn btn-secondary btn-sm" style={{margin: '0.5rem'}}>문제 삭제</button></td>
+                        </tr>
+                            
+                    ))}
                     <tr>
-                        <td>Q{index+1}.</td>
-                        <td><input name="question" id={"question-"+String(index+1)} value={value.question} onChange={onChangeQuestion}/></td>
-                        <td>
-                            <input type="radio" id={"answer-"+String(index+1)} checked={value.answer==="true"} value="true"  name={"answer-"+String(index+1)} onClick={onChangeOption} /> true
-                            <input type="radio" id={"answer-"+String(index+1)} checked={value.answer==="false"} value="false" name={"answer-"+String(index+1)} onClick={onChangeOption} /> false
+                        <td></td>
+                        <td><input type="text" class="form-control" style={{padding: '0.5rem'}} name="newQuestion" value={newQuestion} onChange={onChange} placeholder="문제를 입력하세요." /></td>
+                        <td class="form-group">
+                            <input type="radio" class="form-check-input" style={{margin: '0.5rem'}} value="true"  name="newAnswer" checked={newAnswer==='true'} onChange={onChange} /> <label style={{padding: '0.5rem'}}>O &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</label>
+                            <input type="radio" class="form-check-input" style={{margin: '0.5rem'}} value="false" name="newAnswer" checked={newAnswer==='false'} onChange={onChange} /> <label style={{padding: '0.5rem'}}>X</label>
                         </td>
-                        <td><button onClick={onClickDelete} id={"problem-"+String(index+1)}>문제 삭제</button></td>
+                        <td><button class="btn btn-outline-primary btn-sm" style={{margin: '0.5rem'}} onClick={onCreate}>문제 추가</button></td>
                     </tr>
-                        
-                ))}
+                </tbody>               
             </table>
-            {/*===============================================================*/}
-            <h5>
-                질문 <input name="newQuestion" value={newQuestion} onChange={onChange}  />
-                <input type="radio" value="true"  name="newAnswer" checked={newAnswer==='true'} onChange={onChange} /> true
-                <input type="radio" value="false" name="newAnswer" checked={newAnswer==='false'} onChange={onChange} /> false
-                <button onClick={onCreate}>문제 추가</button>
-            </h5>
+            { textvisible ? <p class="text-danger">문제와 정답을 모두 입력하세요.</p> : null }
 
-            {/*===============================================================*/}
             <br/>
-            <br/>
-            <button onClick={onSubmit}>제출하기</button>            
-            
+            <button class="btn btn-primary" onClick={onSubmit}>저장하기</button>
         </div>
 
     );
