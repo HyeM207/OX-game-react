@@ -3,9 +3,7 @@ import {socket} from '../components';
 import {useNavigate, useLocation} from 'react-router-dom';
 
 const ManageQuiz = () => {
-
-    //let history = useHistory();
-    
+        
     const navigate = useNavigate();
 
     const location = useLocation();
