@@ -3,6 +3,10 @@ import {Link} from 'react-router-dom';
 import '../css/bootstrap.css'
 
 const Menu = () =>{
+
+    // const onClickMenu = (menu) => {
+    //     //navigate("/dynamic-web_OXGame/"+String(menu),{state : {nickname: nickname}});
+    // }
     return(
         // <div>
         //     <ul>

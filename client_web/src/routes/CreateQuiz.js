@@ -118,8 +118,8 @@ const CreateQuiz = () => {
         // 새로운 quiz 추가
         socket.emit("quiz", newQuiz); // ### socket으로 서버에 폼에 입력한 데이터 송신 ###
 
-        // 퀴즈 목록 페이지로 이동
-        navigate("/dynamic-web_OXGame/managequiz", {state : {nickname : nickname}});
+        // 이전 페이지로 이동
+        navigate(-1,{state : {nickname : nickname}});
     }
 
     // HOME 버튼 클릭 => HOME으로 이동

@@ -3,9 +3,7 @@ import {socket} from '../components';
 import {useNavigate, useLocation} from 'react-router-dom';
 
 const ManageQuiz = () => {
-
-    //let history = useHistory();
-    
+        
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -31,7 +29,7 @@ const ManageQuiz = () => {
         navigate("/dynamic-web_OXGame/editquiz",{state : {quiz: quizData[e.target.id], nickname: nickname}});
     }
 
-    // 퀴즈 삭제 버튼 클릭
+    // 퀴즈 삭제 버튼 클릭                                            
     const onClickDelete = (e) => {       
         setQuizData(quizData.filter((value)=> e.target.id !== value._id)); 
 
