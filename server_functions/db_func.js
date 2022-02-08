@@ -130,10 +130,13 @@ func.IsValidRoom = function(roomPin){
                 console.log(error);
           
             }else{
+                // [ 여기 수정 필요]
                 if (room.length != 0){
-                    resolve(true);
+                    // console.log('room manager!! : ', room[0].manager);
+                    resolve({permission : true, manager : room[0].manager });
+
                 } else{
-                    resolve(false);
+                    resolve({permission : false, manager : '' });
                 }
             }
         });

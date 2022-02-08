@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {Menu, socket} from '../components';
 import {useLocation, useNavigate} from "react-router-dom";
-import '../css/bootstrap.min.css'
+import '../css/bootstrap.css'
  const Home = () => {
 
 
@@ -32,7 +32,7 @@ import '../css/bootstrap.min.css'
         if (data.permission == true){
           console.log('[socket- room permission true]',nickname, data.room);
           setMessage("");
-          navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : data.room}});
+          navigate('/dynamic-web_OXGame/waitingRoom',{state :{nickname : nickname, room : data.room, manager : data.manager}});
         }
         else{
           setMessage("Wrong RoomPin!");

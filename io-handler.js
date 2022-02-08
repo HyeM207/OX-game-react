@@ -73,18 +73,23 @@ module.exports = (io) => {
         socket.on('add user', (data) => {
             playerList = [];  // 임시로 정수 코드에서 필요함 (추후엔 db로 가져오거나 해야 할 것)
 
-            console.log('[add user] add user 호출됨 addedUser : ', addedUser, 'user : ', data.nickname);
+            console.log('[add user] add user 호출됨 addedUser : ', addedUser, 'user : ', data.nickname, 'manager : ', data.manager);
             console.log('[add user] data: ',data);
             if (addedUser) return;
 
-            // // we store the username in the socket session for this client
-            //var nickname = data.nickname;
+
             socket.nickname = data.nickname;
             var room = data.room;
-            ++numUsers;
-            users.push(socket.nickname); //유저 목록에 추가 
-            console.log('[add user] numUseruse : ',numUsers);
-            console.log('[add user *] users : ',users);
+
+            if (data.nickname != data.manager)
+            {
+                // // we store the username in the socket session for this client
+                //var nickname = data.nickname;                
+                ++numUsers;
+                users.push(socket.nickname); //유저 목록에 추가 
+                console.log('[add user] numUseruse : ',numUsers);
+                console.log('[add user *] users : ',users);
+            }
             console.log("[add user +] : " + socket.nickname  + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
             // console.log("[add user +] : " + socket.nickname + " id:" +socket.id);
             addedUser = true;
@@ -179,10 +184,12 @@ module.exports = (io) => {
         socket.on("isValidRoom", (room) => {
             console.log('[socket-isValidRoom] room:',room);
 
-            func.IsValidRoom(room).then(function (permission){
-                console.log('[socket-IsValidRoom-Then] permission:',permission);
+            // [ 여기 수정 필요]
+            func.IsValidRoom(room).then(function (data){
+                console.log('[socket-IsValidRoom-Then] permission:',data);
                 socket.emit('room permission',{
-                    permission: permission,
+                    permission: data.permission,
+                    manager : data.manager,
                     room: room
                 });
     

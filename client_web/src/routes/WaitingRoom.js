@@ -12,32 +12,21 @@ const WaitingRoom = () => {
   // 닉네임 설정
   const nickname = location.state.nickname;
   const room = location.state.room;
+  const manager = location.state.manager;
   const navigate = useNavigate();
-  // console.log('[WaitingRoom] nickname: ', nickname);
+  console.log('[WaitingRoom] manager: ', manager);
 
   
   const [chats, setchats] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [playerNum, setPlayerNum] = useState(0);
   const [users, setUsers] = useState([]);
-  const [manager, setManager] = useState('');
+  // const [manager, setManager] = useState('');
   const [minPlayer, setMinPlayer] = useState(0);
   const [maxPlayer, setMaxPlayer] = useState(0);
   const [limitedTime, setLimitedTime] = useState(0);
 
-  // 한번만 호출
-  useEffect(() => {
-      socket.emit('add user', {nickname: nickname, room: room});
 
-      socket.on("loadRoom", (data) => {
-        console.log('[loadRoom] data', data);
-        setMinPlayer(data[0].minPlayer);
-        setMaxPlayer(data[0].maxPlayer);
-        setLimitedTime(data[0].limitedTime);
-        setManager(data[0].manager);
-      });
-      
-  },[]);
 
    // 랜더링 및 값 바뀔 때마다 호출
   useEffect(async() => {
@@ -92,6 +81,21 @@ const WaitingRoom = () => {
      };
    });
 
+  // 한번만 호출
+  useEffect(() => {
+
+    socket.emit('add user', {nickname: nickname, room: room, manager: manager});
+
+    socket.on("loadRoom", (data) => {
+      console.log('[loadRoom] data', data);
+      setMinPlayer(data[0].minPlayer);
+      setMaxPlayer(data[0].maxPlayer);
+      setLimitedTime(data[0].limitedTime);
+      // setManager(data[0].manager);
+    });
+
+  },[]);
+
 
   const ONCHANGE = (e) =>{
   //  setNickName(e.target.value);
@@ -102,7 +106,7 @@ const WaitingRoom = () => {
     console.log('[WatingRoom] GAMESTART - users', users);
     let usersExcecptM  = users.filter((element) => element !== manager);
     console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
-    socket.emit('game start', {room : room, playerNum: playerNum-1, users: usersExcecptM});
+    socket.emit('game start', {room : room, playerNum: playerNum, users: usersExcecptM});
 
   }
 
@@ -135,6 +139,7 @@ const WaitingRoom = () => {
           <h4 class="card-title">{room}</h4>
           <p class="card-text">현재인원 / 최소인원 / 최대인원: { '' + playerNum +' 명 /  ' + minPlayer + ' 명 / ' + maxPlayer + ' 명'}</p>
           <p class="card-text">limitedTime: { '' + limitedTime }</p>
+          <p class="card-text">manager: { '' + manager }</p>
         </div>
       </div>
 
