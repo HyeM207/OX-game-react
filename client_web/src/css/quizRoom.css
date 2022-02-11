@@ -1,49 +1,44 @@
 .roundState {
     float: right;
+    margin: 0 auto;
     height: 100vh;
-    width: 20vw;
+    width: 20%;
     padding: 0px;
-    background: #ffec9e;
+    background: #fff3c5;
 }
 
 .playerList {
-    color: #a6ff9e;
+    color: #000000;
 }
 
 .outList{
-    color: #ffb19e;
+    color: #ff5e35;
 }
 
 .admin_choice_true {
-    width:"50%";
-    height:"auto";
+    width:"40vw";
     min-height: 40px;
-    background:"#adff87";
+    background:"#fffb87";
     float: "left";
-    border-right: 2px solid black;
 }
 
 .admin_choice_false {
-    width:"50%";
-    height:"auto";
+    width:"40vw";
     min-height: 40px;
     background:"#adff87";
     float: "right";
-    border-left: 2px solid black;
 }
 
 .player_choice_true {
-    width:"50%";
-    height:"auto";
+    width:"50vw";
     min-height: 40px;
-    background:"#adff87";
+    background:"#fffb87";
     float: "left";
     border-right: 2px solid black;
 }
 
 .player_choice_false {
-    width:"50%";
-    height:"auto";
+    width:"50vw";
     min-height: 40px;
     background:"#adff87";
     float: "right";
@@ -70,19 +65,3 @@
     text-align: center;
     margin:0 auto; */
 }
-
-/* .radio-group input[type=radio] + label.btn_true {
-    background-image: url("../images/uncheck_true.png");
-}
-.radio-group input[type=radio] + label.btn_false {
-    background-image: url("../images/uncheck_false.png");
-}
-
-.radio-group input[type=radio]:checked + label.btn_true {
-    background-image: url("../images/check_true.png");
-}
-.radio-group input[type=radio]:checked + label.btn_false {
-    background-image: url("../images/check_false.png");
-} */
-
-
