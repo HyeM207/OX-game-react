@@ -80,6 +80,7 @@ module.exports = (io) => {
 
             socket.nickname = data.nickname;
             var room = data.room;
+            socket.room = data.room;
 
             if (data.nickname != data.manager)
             {
@@ -142,12 +143,15 @@ module.exports = (io) => {
             console.log("[disconnected] : "+socket.id+" num : "+numUsers);
             
             // echo globally that this client has left
-            socket.emit('user left', {
+            users = users.filter((user) => user !== socket.nickname);
+            // console.log('?!?>!>?users: ',users);
+            gameserver.in(socket.room).emit('user left', {
                 nickname: socket.nickname,
-                numUsers: numUsers
+                numUsers: numUsers,
+                users : users
             });
 
-            socket.leave(data.room);
+            socket.leave(socket.room);
             }
         });
         

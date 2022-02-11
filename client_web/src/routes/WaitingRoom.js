@@ -25,7 +25,7 @@ const WaitingRoom = () => {
   const [minPlayer, setMinPlayer] = useState(0);
   const [maxPlayer, setMaxPlayer] = useState(0);
   const [limitedTime, setLimitedTime] = useState(0);
-
+  const [message, setMessage] = useState('');
 
 
    // 랜더링 및 값 바뀔 때마다 호출
@@ -62,12 +62,17 @@ const WaitingRoom = () => {
       })
       
       socket.on('user left', (data) => {
-      console.log('[socket-user left]', data.nickname);
+        console.log('!![socket-user left]', data.nickname);
+        // 처리 필요
+        // setUsers(users.filter((user) => user !== data.nickname));
+        setUsers(data.users);
+        setPlayerNum(data.numUsers)
         setchats(chats.concat(`${data.nickname} left`));
       });
 
+
       socket.on('disconnect', () => {
-        console.log('[socket-disconnect]');
+        console.log('!![socket-disconnect]');
         setIsConnected(false);
   });
     //  socket.on('new message', (data) => {
@@ -104,17 +109,25 @@ const WaitingRoom = () => {
   const GAMESTART = () =>{
     console.log('[WatingRoom] GAMESTART - room', room);
     console.log('[WatingRoom] GAMESTART - users', users);
-    let usersExcecptM  = users.filter((element) => element !== manager);
-    console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
-    socket.emit('game start', {room : room, playerNum: playerNum, users: usersExcecptM});
 
+    if (playerNum < minPlayer){
+      setMessage("PlayerNum must be greater than 'minPlayer'");
+      setTimeout(() => {
+        setMessage('');
+      }, 2000)
+    }
+    else{
+      let usersExcecptM  = users.filter((element) => element !== manager);
+      console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
+      socket.emit('game start', {room : room, playerNum: playerNum, users: usersExcecptM});
+    }
   }
 
   return (
     <div style={{ width : "100%"}}>
       <Menu />
       
-      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "13rem", float: "left"}} >
+      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "10rem", float: "left"}} >
         <div class="card-header">My Info</div>
         <div class="card-body">
           <h4 class="card-title">{nickname}</h4>
@@ -155,7 +168,11 @@ const WaitingRoom = () => {
 
       </div>
 
+      <div style={{  position: "absolute", top: "85%", left: "50%", transform: "translate(-50%,-50%)"}}>
+        <p class="text-danger">{message}</p>
+      </div>
       { manager == nickname && <button onClick={GAMESTART} type="button" class="btn btn-success" style={{  position: "absolute", top: "90%", left: "50%", transform: "translate(-50%,-50%)"}} >게임 시작</button>}
+   
 
     </div>
     

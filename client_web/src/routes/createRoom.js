@@ -38,7 +38,7 @@ const CreateRoom = () => {
 
         socket.on('succesCreateRoom', (data) => {
             console.log('[socket-succesCreateRoom] roomPin :' , data.roomPin);
-            navigate('/dynamic-web_OXGame/waitingRoom',{state: {nickname : nickname, room: data.roomPin}});
+            navigate('/dynamic-web_OXGame/waitingRoom',{state: {nickname : nickname, room: data.roomPin, manager : nickname}});
         });
         
     });
