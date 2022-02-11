@@ -145,16 +145,40 @@ module.exports = (io) => {
             // echo globally that this client has left
             users = users.filter((user) => user !== socket.nickname);
             // console.log('?!?>!>?users: ',users);
+
             gameserver.in(socket.room).emit('user left', {
                 nickname: socket.nickname,
                 numUsers: numUsers,
                 users : users
             });
 
+            addedUser = false;
             socket.leave(socket.room);
             }
         });
         
+
+        // 모든 게임 종료 시(결과 페이지에서 home버튼 누를 때)에 game end 
+        socket.on('game end', (data) => {
+            if (addedUser) {
+                --numUsers;
+                // 추가 필요
+                console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+                
+                // echo globally that this client has left
+                users = users.filter((user) => user !== socket.nickname);
+                // console.log('?!?>!>?users: ',users);
+    
+                gameserver.in(socket.room).emit('user left', {
+                    nickname: socket.nickname,
+                    numUsers: numUsers,
+                    users : users
+                });
+    
+                addedUser = false;
+                socket.leave(socket.room);
+                }
+        })
 
         socket.on("test", (data) => {
             console.log(data);

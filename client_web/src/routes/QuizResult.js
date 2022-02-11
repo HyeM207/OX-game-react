@@ -51,6 +51,7 @@ const QuizRoom = () => {
 
   const enterHome = () => {
     console.log("quiz quizList : ", quizList);
+    socket.emit('game end');
     navigate('/dynamic-web_OXGame', {state: {nickname : nickname}});
   }
 
@@ -63,7 +64,6 @@ const QuizRoom = () => {
 
     return(
       <div>
-
         <Menu />
 
 
