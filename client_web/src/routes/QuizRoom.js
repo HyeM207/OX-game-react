@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import {Menu, socket} from '../components';
 import {useNavigate, useLocation } from 'react-router-dom';
 // import { ProgressBar } from 'react-bootstrap'
-import '../css/jj_quiz.css'
+import '../css/quizRoom.css'
+import '../css/bootstrap.css'
 
 
 const QuizRoom = () => {
@@ -23,17 +24,17 @@ const QuizRoom = () => {
   const [choiceTrue, setChoiceTrue] = useState([]);
   const [choiceFalse, setChoiceFalse] = useState([]);
   const [leftTime, setLeftTime] = useState(0);
-  const [time] = useState(10);
   const interval = useRef(null)
   const [outList, setOutList] = useState([]);
   const [playerList, setPlayerList] = useState([]);
-  // const [playerNum, setPlayerNum] = useState(0);
+  const [playerNum, setPlayerNum] = useState(0);
   const [leftPlayerNum, setLeftPlayerNum] = useState(0);
   const [manager, setManager] = useState("");
+  const [limitedTime, setLimitedTime] = useState(0);
 
   const nickname = location.state.nickname;
   const room = location.state.room;
-  const playerNum = location.state.playerNum;
+  // const playerNum = location.state.playerNum;
 
   useEffect(async() => {
     console.log("room data : ", room);
@@ -51,6 +52,7 @@ const QuizRoom = () => {
       setManager(data.manager);
       setQuizProblem(data.problems[round].question);
       setTotalNum(data.problems.length);
+      setChoice("");
       console.log("nickname : ", nickname);
       console.log("problems length : ", data.problems.length);
 
@@ -65,8 +67,8 @@ const QuizRoom = () => {
       const chTrue = data.filter(v => v.choice == 'true').map(v => v.nickname);
       const chFalse = data.filter(v => v.choice == 'false').map(v => v.nickname);
 
-      setChoiceTrue(chTrue.join(', '));
-      setChoiceFalse(chFalse.join(', '));
+      setChoiceTrue(chTrue);
+      setChoiceFalse(chFalse);
     })
 
     socket.on("playerList", (data) => {
@@ -87,12 +89,17 @@ const QuizRoom = () => {
       setOutList(data);
     })
 
+    socket.on("game_info", (data) => {  // 게임 플레이어 수, 게임 시간
+      setPlayerNum(data.playerNum);
+      setLimitedTime(data.limitedTime);
+    })
   
     return () => {
       socket.off('quiz');
       socket.off('usersChoice');
       socket.off('playerList');
       socket.off('outList');
+      socket.off('game_info');
  };
   }, []);
 
@@ -119,11 +126,15 @@ const QuizRoom = () => {
       // console.log("left time : ", leftTime);
       setLeftTime(leftTime => leftTime + 1);
 
-      if (leftTime == 10){
-        console.log("10초마다 실행!");
+      if (leftTime == limitedTime){
+        console.log(limitedTime, "초마다 실행!");
         setLeftTime(0);
-        onSubmit();
-        onSubmitAdmin();
+        if (manager == nickname){
+          onSubmitAdmin();
+        } else {
+          onSubmit();
+
+        }
       }
     }, 1000);
 
@@ -142,39 +153,56 @@ const QuizRoom = () => {
     };
     setChoices(choices.concat(cho));
 
-    if (quizList.problems[round-1].answer != choice && choice != "") {
+    if(round == 1 && choice == ""){
+      console.log("첫 라운드에 공백임! out!!");
+
+      const result = {room: room, nickname: nickname, count: 0};
+
+      socket.emit('outQuiz', result);
+    } else if (quizList.problems[round - 1].answer != choice && choice != "") {  // 답이 틀린 경우
       console.log("you choice wrong answer!!!");
       setCount(count => round - 1);
       setButtonState(true);
       setChoice("");
-      console.log("count 틀린 문제 전 라운드로 : ", count);
+      console.log("답이 틀림 count 틀린 문제 전 라운드로 : ", count);
       console.log("choice 제발 공백 : ", choice);
 
       const result = {room: room, nickname: nickname, count: count};
 
       socket.emit('outQuiz', result);
 
-    } else if (quizList.problems[round-1].answer != choice) {
+    } else if (quizList.problems[round-1].answer != choice) { // 공백인 경우
       console.log("you choice wrong answer!!!");
       setButtonState(true);
       setChoice("");
-      console.log("count 틀린 문제 전 라운드로 : ", count);
+      // setCount(count => round);
+
+      console.log("공백임 count 틀린 문제 전 라운드로 : ", count);
       console.log("choice 제발 공백 : ", choice);
 
-    } else if (choice != "") {
-      setCount(round - 1);
-      console.log("count 다 풀었으면 6 : ", count);
+      // const result = {room: room, nickname: nickname, count: count};
+
+      // socket.emit('outQuiz', result);
+    } else if (round == totalNum && quizList.problems[round-1].answer == choice) {
+      setCount(count => totalNum);
+      console.log("전부 정답임!! : ", count);
+
+      const result = {room: room, nickname: nickname, count: totalNum};
+
+      socket.emit('outQuiz', result);
+    } else if (choice != "") {  // 답이 맞은 경우
+      setCount(count => round);
+      console.log("다 맞아서 다음 문제로! : ", count);
       console.log("My choice : ", choice);
       console.log("choices : ", choices);
-    }
+    } 
+
+    console.log("푼 결과에 따라 조건 적용 결과 : ", count);
 
     if (quizList.problems.length <= round){
       console.log("quiz finish!!!!!!");
       setState(false);
 
-      const result = {room: room, nickname: nickname, count: count};
-
-      socket.emit('outQuiz', result);
       socket.emit('endQuiz', room);
 
     } else {
@@ -208,7 +236,7 @@ const QuizRoom = () => {
   const enterResult = () => {
     console.log("quiz quizList : ", quizList);
     // loadState 지워야 됨
-    navigate('/dynamic-web_OXGame/quizResult', {state: {room: room, nickname : nickname, manager : manager, quizList : quizList, choices : choices, count : count, loadState: false, rankList: []}});
+    navigate('/dynamic-web_OXGame/quizResult', {state: {room: room, nickname : nickname, manager : manager, quizList : quizList, choices : choices, loadState: false, rankList: []}});
   }
 
   const quizSolve = () => {
@@ -233,12 +261,23 @@ const QuizRoom = () => {
     return (
       
       <div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand">OX Survival Game</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+        
         {/* 우측에 라운드 상황 및 탈락, 생존자 정리 */}
         <div className='roundState'>
           <div>
-            라운드 : {round} / {totalNum}
+            라운드 : {round} / {totalNum} <br/>
             생존자 수 : {leftPlayerNum} / {playerNum}
+            <br/><br/>
 
+            {/* 추후에 오른쪽에 고정시켜 둬야 됨 */}
             {/* 생존자 테이블 */}
             <table className='playerList'>
               {
@@ -266,35 +305,29 @@ const QuizRoom = () => {
           </div>
         </div>
 
-        <div>
-          <h1>퀴즈 : {quizTitle}</h1>
-          <h3>남은 시간 : {leftTime} / {time}</h3>
+        <div class="quiz">
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width: ((limitedTime - leftTime)/limitedTime*100) + "%"}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{limitedTime - leftTime}</div>
+          </div>
+          <br/><h1>{quizTitle}</h1><br/>
+          {/* <progress value={leftTime} max={limitedTime}></progress> */}
 
-          <p>Q{round}. {quizProblem}</p>
-
-          true : {choiceTrue} <br/>
-          false : {choiceFalse}
-          
-          {/* <br/><br/>
-          <button onClick={onSubmitAdmin}>다음</button> */}
-
-          <br/><br/>
-          라운드 : {round} / {totalNum}
-          <table border="1" style={{margin: 'auto'}}>
-            <tr>
-              <td>현재 현황</td>
-            </tr>
-
-            <tr>
-              <td>
-                생존자 : {playerList} <br/>
-                탈락자 : {outList}
-              </td>
-            </tr>
-
-          </table>
+          <div class="problem_round">Q{round}. {quizProblem}</div>
         </div>
-        
+
+        <div class="player_choice_false">
+          O 선택 <br/>
+          {choiceTrue.map((player, index) => {
+              return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
+          })}
+        </div>
+
+        <div class="player_choice_false">
+          X 선택 <br/>
+          {choiceFalse.map((player, index) => {
+              return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
+          })}
+        </div>
       </div>
     );
   }
@@ -304,35 +337,44 @@ const QuizRoom = () => {
 
     return (
       <div>
-          <h1>퀴즈 : {quizTitle}</h1>
-          <h3>남은 시간 : {leftTime} / {time}</h3>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand">OX Survival Game</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
 
-          <p>Q{round}. {quizProblem}</p>
+
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style={{width: ((limitedTime - leftTime)/limitedTime*100) + "%"}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{limitedTime - leftTime}</div>
+        </div>
+        <br/><h1>{quizTitle}</h1><br/>
+
+        <p>Q{round}. {quizProblem}</p>
+
+        <div class="answer-group">
+          <input type="radio" value="true"  name="choice" id="btn_true" checked={choice == "true"} onChange={onChange} disabled={buttonState}/>
+          <label for="btn_true">O</label>
+          <input type="radio" value="false" name="choice" id="btn_false" checked={choice == "false"} onChange={onChange} disabled={buttonState}/>
+          <label for="btn_false">X</label>
+        </div>
+
+        <div class="player_choice_true">
+          O 선택 <br/>
+          {choiceTrue.map((player, index) => {
+              return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
+          })}
+        </div>
+
+        <div class="player_choice_false">
+          X 선택 <br/>
+          {choiceFalse.map((player, index) => {
+              return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
+          })}
+        </div>
           
-          true : {choiceTrue} <br/>
-          false : {choiceFalse}
-          <br/><br/>
-
-          <table>
-          {/* {
-            choiceTrue.map((player, index) => (
-              <tr>
-                <td>{index}</td>
-                <td>{rank.nickname}</td>
-                <td>{rank.count}</td>
-              </tr>
-            ))
-          } */}
-
-          </table>
-
-          <br/><br/>
-  
-          <input type="radio" value="true"  name="choice" checked={choice == "true"} onChange={onChange} disabled={buttonState} /> O
-          &nbsp;&nbsp;&nbsp;
-          <input type="radio" value="false" name="choice" checked={choice == "false"} onChange={onChange} disabled={buttonState} /> X
-          {/* <br/><br/>
-          <button onClick={onSubmit}>다음</button> */}
       </div>
     );
   }

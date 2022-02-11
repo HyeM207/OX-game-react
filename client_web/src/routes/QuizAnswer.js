@@ -62,25 +62,28 @@ const QuizAnswer = () => {
 
   return (
     <div>
-      <h1>Quiz Answer!!!</h1>
-      <h3>퀴즈 : {quizTitle}</h3>
+
+      <Menu />
+
+      <br/><h1>Quiz Answer!!!</h1><br/>
+      <h3>{quizTitle}</h3> <br/>
       
-      {number+1}번 문제 : {quizProblem}
-      <br/><br/><br/>
+      Q{number+1}. {quizProblem}
+      <br/><br/>
       정답 : {quizAnswer}
       <br/><br/><br/>
 
       {prevState &&
-        <button onClick={onPrevious}> 이전 </button>
+        <button onClick={onPrevious} class="btn btn-primary btn-sm" type="button"> 이전 </button>
       }
       &nbsp;&nbsp;&nbsp;
 
       {nextState && 
-        <button onClick={onNext}> 다음 </button>
+        <button onClick={onNext} class="btn btn-primary btn-sm" type="button"> 다음 </button>
       }
 
       <br/><br/><br/>
-      <button onClick={onSubmit}> 돌아가기 </button>
+      <button onClick={onSubmit} class="btn btn-primary" type="button"> 돌아가기 </button>
         
     </div>
   );

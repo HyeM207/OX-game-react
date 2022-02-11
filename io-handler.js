@@ -257,9 +257,13 @@ module.exports = (io) => {
                 console.log('get quiz - room data : ', room_data);
                 console.log('get quiz - room manager : ', room_data[0].manager);
                 playerList = room_data[0].players;
-                playerNum = room_data[0].players_num;
                 console.log("player list : ", playerList);
                 gameserver.in(data.room).emit('playerList', playerList);
+
+
+                playerNum = room_data[0].players_num;
+                limitedTime = room_data[0].limitedTime;
+                socket.emit('game_info', {playerNum: playerNum, limitedTime: limitedTime});
             });
 
             func.FindQuiz(data.room).then(function (quiz){
