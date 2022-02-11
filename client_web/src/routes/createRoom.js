@@ -38,7 +38,7 @@ const CreateRoom = () => {
 
         socket.on('succesCreateRoom', (data) => {
             console.log('[socket-succesCreateRoom] roomPin :' , data.roomPin);
-            navigate('/dynamic-web_OXGame/waitingRoom',{state: {nickname : nickname, room: data.roomPin}});
+            navigate('/dynamic-web_OXGame/waitingRoom',{state: {nickname : nickname, room: data.roomPin, manager : nickname}});
         });
         
     });
@@ -155,7 +155,7 @@ const CreateRoom = () => {
 
             <div style={{  position: "absolute", top: "90%", left: "50%", transform: "translate(-50%,-50%)"}}>
                 <p class="text-danger">{message}</p>
-                <button onClick={CREATEROOM}class="btn btn-success" >방 생성하기</button>
+                <button onClick={CREATEROOM} class="btn btn-success" >방 생성하기</button>
             </div>
 
 {/* 

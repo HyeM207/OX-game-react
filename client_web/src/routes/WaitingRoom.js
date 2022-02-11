@@ -12,32 +12,21 @@ const WaitingRoom = () => {
   // 닉네임 설정
   const nickname = location.state.nickname;
   const room = location.state.room;
+  const manager = location.state.manager;
   const navigate = useNavigate();
-  // console.log('[WaitingRoom] nickname: ', nickname);
+  console.log('[WaitingRoom] manager: ', manager);
 
   
   const [chats, setchats] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [playerNum, setPlayerNum] = useState(0);
   const [users, setUsers] = useState([]);
-  const [manager, setManager] = useState('');
+  // const [manager, setManager] = useState('');
   const [minPlayer, setMinPlayer] = useState(0);
   const [maxPlayer, setMaxPlayer] = useState(0);
   const [limitedTime, setLimitedTime] = useState(0);
+  const [message, setMessage] = useState('');
 
-  // 한번만 호출
-  useEffect(() => {
-      socket.emit('add user', {nickname: nickname, room: room});
-
-      socket.on("loadRoom", (data) => {
-        console.log('[loadRoom] data', data);
-        setMinPlayer(data[0].minPlayer);
-        setMaxPlayer(data[0].maxPlayer);
-        setLimitedTime(data[0].limitedTime);
-        setManager(data[0].manager);
-      });
-      
-  },[]);
 
    // 랜더링 및 값 바뀔 때마다 호출
   useEffect(async() => {
@@ -73,12 +62,17 @@ const WaitingRoom = () => {
       })
       
       socket.on('user left', (data) => {
-      console.log('[socket-user left]', data.nickname);
+        console.log('!![socket-user left]', data.nickname);
+        // 처리 필요
+        // setUsers(users.filter((user) => user !== data.nickname));
+        setUsers(data.users);
+        setPlayerNum(data.numUsers)
         setchats(chats.concat(`${data.nickname} left`));
       });
 
+
       socket.on('disconnect', () => {
-        console.log('[socket-disconnect]');
+        console.log('!![socket-disconnect]');
         setIsConnected(false);
   });
     //  socket.on('new message', (data) => {
@@ -92,6 +86,21 @@ const WaitingRoom = () => {
      };
    });
 
+  // 한번만 호출
+  useEffect(() => {
+
+    socket.emit('add user', {nickname: nickname, room: room, manager: manager});
+
+    socket.on("loadRoom", (data) => {
+      console.log('[loadRoom] data', data);
+      setMinPlayer(data[0].minPlayer);
+      setMaxPlayer(data[0].maxPlayer);
+      setLimitedTime(data[0].limitedTime);
+      // setManager(data[0].manager);
+    });
+
+  },[]);
+
 
   const ONCHANGE = (e) =>{
   //  setNickName(e.target.value);
@@ -100,17 +109,25 @@ const WaitingRoom = () => {
   const GAMESTART = () =>{
     console.log('[WatingRoom] GAMESTART - room', room);
     console.log('[WatingRoom] GAMESTART - users', users);
-    let usersExcecptM  = users.filter((element) => element !== manager);
-    console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
-    socket.emit('game start', {room : room, playerNum: playerNum-1, users: usersExcecptM});
 
+    if (playerNum < minPlayer){
+      setMessage("PlayerNum must be greater than 'minPlayer'");
+      setTimeout(() => {
+        setMessage('');
+      }, 2000)
+    }
+    else{
+      let usersExcecptM  = users.filter((element) => element !== manager);
+      console.log('[WatingRoom] GAMESTART - usersExcecptM', usersExcecptM);
+      socket.emit('game start', {room : room, playerNum: playerNum, users: usersExcecptM});
+    }
   }
 
   return (
     <div style={{ width : "100%"}}>
       <Menu />
       
-      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "13rem", float: "left"}} >
+      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "10rem", float: "left"}} >
         <div class="card-header">My Info</div>
         <div class="card-body">
           <h4 class="card-title">{nickname}</h4>
@@ -135,6 +152,7 @@ const WaitingRoom = () => {
           <h4 class="card-title">{room}</h4>
           <p class="card-text">현재인원 / 최소인원 / 최대인원: { '' + playerNum +' 명 /  ' + minPlayer + ' 명 / ' + maxPlayer + ' 명'}</p>
           <p class="card-text">limitedTime: { '' + limitedTime }</p>
+          <p class="card-text">manager: { '' + manager }</p>
         </div>
       </div>
 
@@ -150,7 +168,11 @@ const WaitingRoom = () => {
 
       </div>
 
+      <div style={{  position: "absolute", top: "85%", left: "50%", transform: "translate(-50%,-50%)"}}>
+        <p class="text-danger">{message}</p>
+      </div>
       { manager == nickname && <button onClick={GAMESTART} type="button" class="btn btn-success" style={{  position: "absolute", top: "90%", left: "50%", transform: "translate(-50%,-50%)"}} >게임 시작</button>}
+   
 
     </div>
     
