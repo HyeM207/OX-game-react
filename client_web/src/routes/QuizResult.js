@@ -51,7 +51,8 @@ const QuizRoom = () => {
 
   const enterHome = () => {
     console.log("quiz quizList : ", quizList);
-    socket.emit('game end');
+    console.log("!!! manager : ", manager, " nickname:", manager);
+    socket.emit('game end', {manager : manager, nickname : nickname});
     navigate('/dynamic-web_OXGame', {state: {nickname : nickname}});
   }
 

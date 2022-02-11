@@ -43,6 +43,7 @@
 const url = require('url');
 const func = require('./server_functions/db_func');
 const async = require('async');
+const { Socket } = require('dgram');
 
 module.exports = (io) => {
     
@@ -138,42 +139,49 @@ module.exports = (io) => {
         // when the user disconnects.. perform this
         socket.on('disconnect', (data) => {
             if (addedUser) {
-            --numUsers;
+                if (data.nickname != data.manager){
+                    --numUsers;
+                    users = users.filter((user) => user !== socket.nickname);
+                }
+           
             // 추가 필요
-            console.log("[disconnected] : "+socket.id+" num : "+numUsers);
-            
-            // echo globally that this client has left
-            users = users.filter((user) => user !== socket.nickname);
-            // console.log('?!?>!>?users: ',users);
+                console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+                
+                // echo globally that this client has left
+        
+                // console.log('?!?>!>?users: ',users);
 
-            gameserver.in(socket.room).emit('user left', {
-                nickname: socket.nickname,
-                numUsers: numUsers,
-                users : users
-            });
+                gameserver.in(socket.room).emit('user left', {
+                    nickname: socket.nickname,
+                    numUsers: numUsers,
+                    users : users
+                });
 
-            addedUser = false;
-            socket.leave(socket.room);
-            }
+                addedUser = false;
+                socket.leave(socket.room);
+                }
         });
         
 
         // 모든 게임 종료 시(결과 페이지에서 home버튼 누를 때)에 game end 
         socket.on('game end', (data) => {
             if (addedUser) {
-                --numUsers;
+                if (socket.nickname != data.manager){
+                    --numUsers;
+                    users = users.filter((user) => user !== socket.nickname);
+                    console.log("잘 호출됨~!!~!");
+                }
+            
                 // 추가 필요
-                console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+                console.log("!![disconnected] : "+socket.id+" num : "+numUsers);
                 
-                // echo globally that this client has left
-                users = users.filter((user) => user !== socket.nickname);
                 // console.log('?!?>!>?users: ',users);
     
-                gameserver.in(socket.room).emit('user left', {
-                    nickname: socket.nickname,
-                    numUsers: numUsers,
-                    users : users
-                });
+                // gameserver.in(socket.room).emit('user left', {
+                //     nickname: socket.nickname,
+                //     numUsers: numUsers,
+                //     users : users
+                // });
     
                 addedUser = false;
                 socket.leave(socket.room);
