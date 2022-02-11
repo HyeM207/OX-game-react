@@ -1,8 +1,8 @@
 .roundState {
     float: right;
-    margin: 0 auto;
     height: 100vh;
     width: 20%;
+    margin: auto;
     padding: 0px;
     background: #fff3c5;
 }

@@ -51,6 +51,7 @@ const QuizRoom = () => {
 
   const enterHome = () => {
     console.log("quiz quizList : ", quizList);
+    socket.emit('game end');
     navigate('/dynamic-web_OXGame', {state: {nickname : nickname}});
   }
 
@@ -63,7 +64,6 @@ const QuizRoom = () => {
 
     return(
       <div>
-
         <Menu />
 
 
@@ -98,9 +98,9 @@ const QuizRoom = () => {
 
         <br/>
         <div style={{margin:'auto'}} >
-          <button onClick={enterAnswer} class="btn btn-primary" type="button" id="button-addon2" style={{ margin : "5px", width : "auto", font:"1em" }}>정답 보기</button>
+          <button onClick={enterAnswer} class="btn btn-primary btn-sm" type="button" style={{ margin : "5px", width : "auto", font:"1em" }}>정답 보기</button>
           &nbsp;&nbsp;&nbsp;
-          <button onClick={enterHome} class="btn btn-primary" type="button" id="button-addon2" style={{ margin : "5px", width : "auto", font:"1em" }}>홈으로 이동</button>
+          <button onClick={enterHome} class="btn btn-primary btn-sm" type="button" style={{ margin : "5px", width : "auto", font:"1em" }}>홈으로 이동</button>
         </div>
         
 

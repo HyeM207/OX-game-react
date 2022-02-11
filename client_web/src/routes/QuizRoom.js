@@ -280,7 +280,7 @@ const QuizRoom = () => {
 
             {/* 추후에 오른쪽에 고정시켜 둬야 됨 */}
             {/* 생존자 테이블 */}
-            <table border="1" className='playerList'>
+            <table className='playerList'>
               {
                 playerList.map((player, index) => (
                   <tr>
@@ -311,19 +311,19 @@ const QuizRoom = () => {
             <div class="progress-bar" role="progressbar" style={{width: ((limitedTime - leftTime)/limitedTime*100) + "%"}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{limitedTime - leftTime}</div>
           </div>
           <br/><h1>{quizTitle}</h1><br/>
-          {/* <progress value={leftTime} max={limitedTime}></progress> */}
 
           <div class="problem_round">Q{round}. {quizProblem}</div>
         </div>
 
-        <div class="admin_choice_false">
+        <br/><br/>
+        <div style={{width:"40%", minHeight: "100px", float: "left", borderRight: "2px solid black"}}>
           O 선택 <br/>
           {choiceTrue.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
           })}
         </div>
 
-        <div class="admin_choice_false">
+        <div style={{width:"40%", minHeight: "100px", float: "right", borderLeft: "2px solid black"}}>
           X 선택 <br/>
           {choiceFalse.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
@@ -355,21 +355,21 @@ const QuizRoom = () => {
 
         <p>Q{round}. {quizProblem}</p>
 
-        <div class="answer-group">
+        <div class="answer-group" >
           <input type="radio" value="true"  name="choice" id="btn_true" checked={choice == "true"} onChange={onChange} disabled={buttonState}/>
           <label for="btn_true">O</label>
           <input type="radio" value="false" name="choice" id="btn_false" checked={choice == "false"} onChange={onChange} disabled={buttonState}/>
           <label for="btn_false">X</label>
         </div>
 
-        <div class="player_choice_true">
+        <div style={{width:"50%", minHeight: "100px", float: "left", borderRight: "2px solid black"}}>
           O 선택 <br/>
           {choiceTrue.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
           })}
         </div>
 
-        <div class="player_choice_false">
+        <div style={{width:"50%", minHeight: "100px", float: "right", borderLeft: "2px solid black"}}>
           X 선택 <br/>
           {choiceFalse.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
