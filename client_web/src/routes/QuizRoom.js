@@ -273,13 +273,14 @@ const QuizRoom = () => {
         {/* 우측에 라운드 상황 및 탈락, 생존자 정리 */}
         <div className='roundState'>
           <div>
+            <br/><br/>
             라운드 : {round} / {totalNum} <br/>
             생존자 수 : {leftPlayerNum} / {playerNum}
             <br/><br/>
 
             {/* 추후에 오른쪽에 고정시켜 둬야 됨 */}
             {/* 생존자 테이블 */}
-            <table className='playerList'>
+            <table border="1" className='playerList'>
               {
                 playerList.map((player, index) => (
                   <tr>
@@ -315,14 +316,14 @@ const QuizRoom = () => {
           <div class="problem_round">Q{round}. {quizProblem}</div>
         </div>
 
-        <div class="player_choice_false">
+        <div class="admin_choice_false">
           O 선택 <br/>
           {choiceTrue.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
           })}
         </div>
 
-        <div class="player_choice_false">
+        <div class="admin_choice_false">
           X 선택 <br/>
           {choiceFalse.map((player, index) => {
               return (<button  key={index}  type="button" disabled="false" class="btn btn-outline-dark" style={{ float: "left", margin : "5px"}}>{player}</button>);
