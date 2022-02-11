@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Menu, socket} from '../components';
 import {useLocation, useNavigate} from "react-router-dom";
 import '../css/bootstrap.css'
+import { auto } from 'async';
  const Home = () => {
 
 
@@ -85,7 +86,7 @@ import '../css/bootstrap.css'
    
   
 
-      <div style={{ position: "absolute", top: "55%", left: "50%", transform: "translate(-50%,-50%)"}}>
+      <div style={{ width: '200px', margin: 'auto' }}>
         <div class="d-grid gap-2">
           <h4>{message}</h4>
           <input onChange={ONCHANGEROOM} value={room} type="text"  placeholder="RoomPin (5 Number)" style={{height: '50px'}}/>

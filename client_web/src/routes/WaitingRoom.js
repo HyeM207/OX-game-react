@@ -127,7 +127,7 @@ const WaitingRoom = () => {
     <div style={{ width : "100%"}}>
       <Menu />
       
-      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "10rem", float: "left"}} >
+      <div class="card bg-secondary mb-3" style={{ width: "25%", height : "13rem", float: "left"}} >
         <div class="card-header">My Info</div>
         <div class="card-body">
           <h4 class="card-title">{nickname}</h4>
