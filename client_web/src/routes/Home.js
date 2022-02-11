@@ -88,7 +88,7 @@ import { auto } from 'async';
 
       <div style={{ width: '200px', margin: 'auto' }}>
         <div class="d-grid gap-2">
-          <h4>{message}</h4>
+          <h4 style={{color: '#FF0000'}}>{message}</h4>
           <input onChange={ONCHANGEROOM} value={room} type="text"  placeholder="RoomPin (5 Number)" style={{height: '50px'}}/>
           <button class="btn btn-lg btn-primary" type="button" onClick={ENTERWAITING}>Enter QuizRoom</button>
           <button class="btn btn-secondary" type="button" onClick={InsertPage}>Create Quiz</button>
