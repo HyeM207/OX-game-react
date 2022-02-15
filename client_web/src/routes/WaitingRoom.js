@@ -38,7 +38,7 @@ const WaitingRoom = () => {
   //     <div>Hello world</div> 
   //   );
   // };
-  usePrompt('현재 페이지를 벗어나시겠습니까?', true);
+  // usePrompt('현재 페이지를 벗어나시겠습니까?', true);
 
    // 랜더링 및 값 바뀔 때마다 호출
   useEffect(async() => {

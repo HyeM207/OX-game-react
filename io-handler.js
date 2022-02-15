@@ -138,14 +138,16 @@ module.exports = (io) => {
 
         // when the user disconnects.. perform this
         socket.on('disconnect', (data) => {
+            console.log("[disconnected] : "+socket.id+" num : "+numUsers);
             if (addedUser) {
                 if (data.nickname != data.manager){
                     --numUsers;
                     users = users.filter((user) => user !== socket.nickname);
+                    console.log("이거 호출됨?!?!?!?!");
                 }
            
             // 추가 필요
-                console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+                console.log("!![disconnected] : "+socket.id+" num : "+numUsers);
                 
                 // echo globally that this client has left
         
