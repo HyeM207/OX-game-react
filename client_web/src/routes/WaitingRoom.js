@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {Menu, socket} from '../components';
+import {Menu, socket, Blocker} from '../components';
 import {useNavigate, useLocation} from 'react-router-dom';
-
+import { usePrompt } from '../components/Blocker';
 
 const WaitingRoom = () => {
 
@@ -27,6 +27,18 @@ const WaitingRoom = () => {
   const [limitedTime, setLimitedTime] = useState(0);
   const [message, setMessage] = useState('');
 
+  // 뒤로 가기 막기
+  
+  
+
+  // const MyComponent = () => {
+  //   const formIsDirty = true; // Condition to trigger the prompt.
+  //   usePrompt( 'Leave screen?', formIsDirty );
+  //   return (
+  //     <div>Hello world</div> 
+  //   );
+  // };
+  usePrompt('현재 페이지를 벗어나시겠습니까?', true);
 
    // 랜더링 및 값 바뀔 때마다 호출
   useEffect(async() => {
