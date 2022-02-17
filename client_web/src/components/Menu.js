@@ -27,19 +27,19 @@ const Menu = () =>{
             <div class="collapse navbar-collapse" id="navbarColor01">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                <a class="nav-link active" href="/dynamic-web_OXGame">Home
+                <a class="nav-link active" href="/dynamic-web_OXGame">ManageQuiz
                     <span class="visually-hidden">(current)</span>
                 </a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="/dynamic-web_OXGame/main">Main</a>
+                <a class="nav-link" href="/dynamic-web_OXGame/main">Setting</a>
                 </li>
-                <li class="nav-item">
+                {/* <li class="nav-item">
                 <a class="nav-link" href="#">미정1</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="#">미정2</a>
-                </li>
+                </li> */}
               
             </ul>
 
