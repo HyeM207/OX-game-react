@@ -26,7 +26,10 @@ const ManageQuiz = () => {
 
     // 퀴즈 리스트 클릭 => 해당 퀴즈 EDIT PAGE로 이동
     const onClickTitle = (e) => {         
+        console.log("aaa", e.target);
         navigate("/dynamic-web_OXGame/editquiz",{state : {quiz: quizData[e.target.id], nickname: nickname}});
+        console.log("index", e.target.id);
+        console.log("tag", quizData[e.target.id])
     }
 
     // 퀴즈 삭제 버튼 클릭                                            
@@ -40,10 +43,6 @@ const ManageQuiz = () => {
     // 퀴즈 출제 버튼 클릭 => 출제 페이지로 이동
     const onClickCreate = (e) => {
         navigate("/dynamic-web_OXGame/createquiz",{state : {nickname : nickname}});
-        // history.push({
-        //     pathname: "/dynamic-web_OXGame/createquiz",
-        //     state : {nickname : nickname}
-        // })
     }
 
     // HOME 버튼 클릭 => HOME으로 이동
@@ -75,10 +74,10 @@ const ManageQuiz = () => {
                 <tbody>
                     {quizData.map((value, index) => (
                         <tr id={index} >
-                            <td id={index} onClick={onClickTitle}><label style={{padding: '0.5rem'}}>{index+1}</label></td>
-                            <td id={index} onClick={onClickTitle}><label style={{padding: '0.5rem'}}>{value.title}</label></td>
-                            <td id={index} onClick={onClickTitle}><label style={{padding: '0.5rem'}}>{value.problem_num}</label></td>
-                            <td id={index} onClick={onClickTitle}><label style={{padding: '0.5rem'}}>{value.date}</label></td>
+                            <td id={index} onClick={onClickTitle}><label id={index} style={{padding: '0.5rem'}}>{index+1}</label></td>
+                            <td id={index} onClick={onClickTitle}><label id={index} style={{padding: '0.5rem'}}>{value.title}</label></td>
+                            <td id={index} onClick={onClickTitle}><label id={index} style={{padding: '0.5rem'}}>{value.problem_num}</label></td>
+                            <td id={index} onClick={onClickTitle}><label id={index} style={{padding: '0.5rem'}}>{value.date}</label></td>
                             <td><button class="btn btn-secondary btn-sm" style={{margin: '0.5rem'}} onClick={onClickDelete} id={value._id}>퀴즈 삭제</button></td>
                         </tr>
                             

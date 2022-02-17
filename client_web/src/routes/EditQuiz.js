@@ -15,6 +15,7 @@ const EditQuiz = () => {
 
     const [quiz, setQuiz] = useState(location.state.quiz);
     const quizID = useState(location.state.quiz._id);
+    console.log("id", location.state.quiz._id)
     const [title, setTitle] = useState(quiz.title);
     const [problems, setProblems] = useState(quiz.problems);
     const [inputs, setInputs] = useState({ newQuestion: '', newAnswer: '' });
