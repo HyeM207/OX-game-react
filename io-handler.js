@@ -49,13 +49,16 @@ module.exports = (io) => {
     
     var gameserver = io.of("dynamic-web_OXGame");
     
-    let numUsers = 0; // 방 인원
-    let users = [];
+    // let numUsers = 0; // 방 인원
+    // let users = []; // 방 인원 목록 
+    // var playerList = [];
+    var rooms ={};  // 방별 관리 {numUsers ,users, manager} 저장
+
 
     var roundChoice = [];  // 라운드 별 선택한 답 {nickname: string, round: int, answer: string}
     var rank = []; // 순위 닉네임 저장 {rank: int, nickname: string, count: int}
     var outList = [];
-    var playerList = [];
+
     
     gameserver.on('connection', (socket) => {
         console.log("io-handler.js socket connect!!");
@@ -70,36 +73,32 @@ module.exports = (io) => {
         let addedUser = false; // added 유저 경우 
        
 
-        // when the client emits 'add user', this listens \and executes
+
+        // when the client emits 'add user', this listens and executes
         socket.on('add user', (data) => {
-            playerList = [];  // 임시로 정수 코드에서 필요함 (추후엔 db로 가져오거나 해야 할 것)
-
             console.log('[add user] add user 호출됨 addedUser : ', addedUser, 'user : ', data.nickname, 'manager : ', data.manager);
-            console.log('[add user] data: ',data);
-            if (addedUser) return;
 
+            if (addedUser) return;
 
             socket.nickname = data.nickname;
             var room = data.room;
             socket.room = data.room;
 
+
+            // 방 매니저가 아닌 경우에 rooms 리스트에 접속한 사용자 추가 (명수, 유저리스트)
             if (data.nickname != data.manager)
             {
-                // // we store the username in the socket session for this client
-                //var nickname = data.nickname;                
-                ++numUsers;
-                users.push(socket.nickname); //유저 목록에 추가 
-                console.log('[add user] numUseruse : ',numUsers);
-                console.log('[add user *] users : ',users);
+                ++rooms[room].numUsers;
+                rooms[room].users.push(socket.nickname); 
+
+                
             }
-            console.log("[add user +] : " + socket.nickname  + " id:" +socket.id+" num : "+numUsers+ " room:"+ data.room);
-            // console.log("[add user +] : " + socket.nickname + " id:" +socket.id);
+
+            console.log("[add user *] : " + socket.nickname  + " room : " + rooms[room]);
             addedUser = true;
 
-            
             socket.join(room);
-            // console.log('!!!!!! ', gameserver.sockets.adapter.rooms[room]); 
-            // gameserver.sockets.clients(room)
+
 
             // Room 정보 전달 
             func.loadRoom(data.room).then(function (room){
@@ -108,18 +107,19 @@ module.exports = (io) => {
                 console.log('룸 정보 전송 완료');
             });
 
+
             // 사용자 로그인 알림
             gameserver.in(room).emit('login', {
-                numUsers: numUsers,
-                users : users
+                numUsers: rooms[room].numUsers,
+                users : rooms[room].users
             });
 
+            
             // 새 사용자 입장 알림 
-            //  echo globally (all clients) that a person has connected
             gameserver.in(room).emit('user joined', {
                 nickname: socket.nickname,
-                numUsers: numUsers,
-                users : users
+                numUsers: rooms[room].numUsers,
+                users : rooms[room].users
             });
 
         });
@@ -136,27 +136,23 @@ module.exports = (io) => {
             });
         })
 
-        // when the user disconnects.. perform this
+        // 사용자가 socket 접속을 끊었을 때 호출
         socket.on('disconnect', (data) => {
-            console.log("[disconnected] : "+socket.id+" num : "+numUsers);
+            console.log("[disconnected] : "+socket.nickname+" socket.room : "+socket.room);
+
             if (addedUser) {
-                if (data.nickname != data.manager){
-                    --numUsers;
-                    users = users.filter((user) => user !== socket.nickname);
-                    console.log("이거 호출됨?!?!?!?!");
+                // 사용자가 방장이 아니라면 rooms 정보에서 해당 사용자 정보 뺌 
+                if (socket.nickname != rooms[socket.room].manager){
+                    -- rooms[socket.room].numUsers;
+                    rooms[socket.room].users =  rooms[socket.room].users.filter((user) => user !== socket.nickname);
                 }
            
-            // 추가 필요
-                console.log("!![disconnected] : "+socket.id+" num : "+numUsers);
+                console.log("!![disconnected] : "+socket.id+ " rooms : "+ rooms[socket.room]);
                 
-                // echo globally that this client has left
-        
-                // console.log('?!?>!>?users: ',users);
-
                 gameserver.in(socket.room).emit('user left', {
                     nickname: socket.nickname,
-                    numUsers: numUsers,
-                    users : users
+                    numUsers: rooms[socket.room].numUsers,
+                    users : rooms[socket.room].users
                 });
 
                 addedUser = false;
@@ -168,17 +164,17 @@ module.exports = (io) => {
         // 모든 게임 종료 시(결과 페이지에서 home버튼 누를 때)에 game end 
         socket.on('game end', (data) => {
             if (addedUser) {
+                // 사용자가 방 매니저가 아닌 경우만 room 정보 수정함
                 if (socket.nickname != data.manager){
-                    --numUsers;
-                    users = users.filter((user) => user !== socket.nickname);
+                    -- rooms[socket.room].numUsers;
+                    rooms[socket.room].users =  rooms[socket.room].users.filter((user) => user !== socket.nickname);
                     console.log("잘 호출됨~!!~!");
                 }
             
                 // 추가 필요
-                console.log("!![disconnected] : "+socket.id+" num : "+numUsers);
+                console.log("!![disconnected] : "+socket.id+" num : "+rooms[socket.room]);
                 
-                // console.log('?!?>!>?users: ',users);
-    
+
                 // gameserver.in(socket.room).emit('user left', {
                 //     nickname: socket.nickname,
                 //     numUsers: numUsers,
@@ -190,39 +186,13 @@ module.exports = (io) => {
                 }
         })
 
-        socket.on("test", (data) => {
-            console.log(data);
-            socket.emit("server", "hello22");
-        });
-        
-        socket.on("join", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에 join 해주는 함수임
-            console.log("[join]", data);
-            //socket.join(data.room);
-
-            // data를 출력했을 때 {"troom" : 12345, "username" : "mini"} 라고 한다면
-            // socket.io에는 namespace 하위 개념으로 room이 있음
-            // room은 게임 그룹 단위로 여기면 될 것 같음 (예를 들어 어몽어스 한 방)
-            // room이름(data.room)을 고유번호5자리 등으로 하여 참가자들이 join할 때 마다 즉, 여기 함수로 들어올 때마다
-            // firebase에 사용자 이름(data.username)을 해당 룸 하위에 추가하면 될 것 같음
-    
-        });
-
-        socket.on("leave", (data) => { // 이 함수는 클라이언트 단에서 leave를 이름으로 해당 클라이언트 정보를 담아 emit을 해주면 해당 클라이언트를 room에서 leave해주는 함수임
-            console.log(data);
-            //socket.leave(data.room);
-
-            // room이름(data.room)을 고유번호5자리 등으로 하여 참가자들이 leave할 때 마다 즉, 여기 함수로 들어올 때마다
-            // firebase에 사용자 이름(data.username)을 해당 룸 하위에 제거해주면 될 것 같음
-            
-        });
-        // 그리고 만약 해당 퀴즈가 끝나면 Redis channel 삭제 예정
 
 
         // =========== HOME  ===================
+        // 홈 화면에서 해당 룸 (pin)이 활성화 되어 있는지 확인함
         socket.on("isValidRoom", (room) => {
             console.log('[socket-isValidRoom] room:',room);
 
-            // [ 여기 수정 필요]
             func.IsValidRoom(room).then(function (data){
                 console.log('[socket-IsValidRoom-Then] permission:',data);
                 socket.emit('room permission',{
@@ -243,7 +213,7 @@ module.exports = (io) => {
         });
 
 
-        // ===== CreateRoom =====
+        // ========= CreateRoom =========
         socket.on("loadQuiz", (data) =>{
             console.log('[socket-loadQuiz] 호출됨');
 
@@ -257,11 +227,19 @@ module.exports = (io) => {
 
         socket.on("createRoom", (room) =>{
             console.log('[socket-createRoom] 호출됨');
-            // console.log('수정 전 ', room);
+      
             room['creationDate'] = nowDate();
             room['roomPin'] = randomN();
-            // console.log('수정 후 ', room);
+    
            func.InsertRoom(room);
+
+            rooms[room.roomPin] = { 
+                numUsers : 0,
+                users : [],
+                manager :  room.manager
+            }
+
+            console.log("[createRoom] rooms 딕셔너리 : " , rooms);
 
            socket.emit('succesCreateRoom', {
                 roomPin: room.roomPin
